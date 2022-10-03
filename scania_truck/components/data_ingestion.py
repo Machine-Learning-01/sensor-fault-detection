@@ -1,5 +1,4 @@
 import logging
-import os
 import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -17,8 +16,13 @@ mongo_op = MongoDBOperation()
 class DataIngestion:
     def __init__(self):
         self.config = read_params()
+<<<<<<< HEAD
 
         self.schema_config = read_params("scania_truck/config/schema.yaml")
+=======
+        self.s3 = S3Operation()
+        self.schema_file = read_params("scania_truck/config/schema.yaml")
+>>>>>>> 6d9d288ae9fd9109ec38541389d30357ae55a309
 
         self.db_name = self.config["mongo"]["db_name"]
 
@@ -26,9 +30,8 @@ class DataIngestion:
 
         self.drop_cols = self.schema_config["drop_columns"]
 
-        self.s3 = S3Operation()
-
-    def split_data_as_train_test(self, df):
+    @staticmethod
+    def split_data_as_train_test(df):
         logger.info("Entered split_data_as_train_test method of Data_Ingestion class")
 
         try:
