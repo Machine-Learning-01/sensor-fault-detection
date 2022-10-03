@@ -178,6 +178,7 @@ class DataValidation:
             logger.info("Initiated data validation for the dataset")
 
             train_df = self.train_set
+            
             test_df = self.test_set
 
             (

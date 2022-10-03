@@ -85,6 +85,20 @@ class TrainPipeline:
 
             raise message.error_message
 
+    @staticmethod
+    def start_model_pusher():
+        try:
+            model_trainer = ModelTrainer()
+
+            model_trainer.initiate_model_pusher()
+
+        except Exception as e:
+            message = ScaniaException(e, sys)
+
+            logger.error(message.error_message)
+
+            raise message.error_message
+
     def start_model_trainer(self, train_set, test_set):
         try:
             model_trainer = ModelTrainer()
@@ -92,7 +106,26 @@ class TrainPipeline:
             model_trainer.initiate_model_trainer(train_set, test_set)
 
         except Exception as e:
+            message = ScaniaException(e, sys)
 
+            logger.error(message.error_message)
+
+            raise message.error_message
+        
+    def run_pipeline(self):
+        try:
+            train_set, test_set = self.start_data_ingestion()
+
+            if self.start_data_validation(train_set, test_set):
+                train_set, test_set = self.start_data_transformation(
+                    train_set, test_set
+                )
+
+                self.start_model_trainer(train_set, test_set)
+
+                self.start_model_pusher()
+
+        except Exception as e:
             message = ScaniaException(e, sys)
 
             logger.error(message.error_message)

@@ -8,6 +8,10 @@ __pycache__/
 
 scania_truck/artifacts
 
+demotest.py
+
+aps_failure_training_set1.csv
+
 scania_truck/logs
 
 # Distribution / packaging
