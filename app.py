@@ -11,7 +11,6 @@ app = FastAPI()
 
 config = read_params()
 
-
 origins = ["*"]
 
 app.add_middleware(
@@ -85,6 +84,7 @@ async def trainRouteClient():
 
     except Exception as e:
         return Response(f"Error Occurred! {e}")
+
 
 
 # @app.get("/predict")

@@ -14,7 +14,7 @@ model_utils:
   n_jobs: -1
 schema_path: scania_truck/config/schema.yaml
 preprocessor_obj_file_name: scania_truck/artifacts/scania_truck_preprocessor.pkl
-base_model_score: '0.9300599486154725'
+base_model_score: '0.9424233743912919'
 train_model:
   XGBClassifier:
     booster:

@@ -19,7 +19,7 @@ class DataIngestion:
         
         self.s3 = S3Operation()
         
-        self.schema_file = read_params("scania_truck/config/schema.yaml")
+        self.schema_config = read_params("scania_truck/config/schema.yaml")
 
         self.db_name = self.config["mongo"]["db_name"]
 
