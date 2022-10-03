@@ -1,8 +1,8 @@
 import logging
-import os
 import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
+from scania_truck.cloud_storage.s3_operations import S3Operation
 
 from scania_truck.exception import ScaniaException
 from scania_truck.utils.mongo_operations import MongoDBOperation
@@ -16,7 +16,7 @@ mongo_op = MongoDBOperation()
 class DataIngestion:
     def __init__(self):
         self.config = read_params()
-
+        self.s3 = S3Operation()
         self.schema_file = read_params("scania_truck/config/schema.yaml")
 
         self.db_name = self.config["mongo"]["db_name"]
@@ -69,7 +69,6 @@ class DataIngestion:
             return df
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
 
             logger.error(message.error_message)
@@ -85,15 +84,15 @@ class DataIngestion:
             df1 = df.drop(self.drop_cols, axis=1)
 
             logger.info("Got the data from mongodb")
-            
+
             train_set, test_set = self.split_data_as_train_test(df1)
-            
+
             logger.info("Performed train test split on the dataset")
 
             logger.info("Exited initiate_data_ingestion method of Data_Ingestion class")
 
             return train_set, test_set
-            
+
         except Exception as e:
             message = ScaniaException(e, sys)
 

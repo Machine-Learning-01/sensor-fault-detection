@@ -1,5 +1,5 @@
 mongo:
-  db_name: iNeuron
+  db_name: ineuron
   collection_name: scania_truck
 artifacts_dir: scania_truck/artifacts
 logs_dir: scania_truck/logs
@@ -7,6 +7,7 @@ save_format: .sav
 s3_bucket:
   scania_truck_input_files_bucket: scania-truck-io-files
   scania_truck_logs_bucket: scania-truck-logs
+  scania-truck-pred_bucket: scania-truck-pred-data
 model_utils:
   verbose: 3
   cv: 2
@@ -33,3 +34,5 @@ train_model:
     - friedman_mse
     - squared_error
 model_file_name: model
+
+pred_data_csv_file: scania_pred_data.csv

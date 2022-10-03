@@ -3,6 +3,7 @@ import os
 import pickle
 import sys
 from io import StringIO
+from pandas import read_csv
 
 import boto3
 from botocore.exceptions import ClientError
@@ -142,6 +143,49 @@ class S3Operation:
                 dest_f = f
 
                 self.upload_file(local_f, dest_f, bucket, remove=False)
+
+        except Exception as e:
+            message = ScaniaException(e, sys)
+
+            logger.error(message.error_message)
+
+            raise message.error_message
+
+    def upload_df_as_csv(self, data_frame, local_fname, bucket_fname, bucket):
+        try:
+            data_frame.to_csv(local_fname, index=None, header=True)
+
+            self.upload_file(local_fname, bucket_fname, bucket)
+
+        except Exception as e:
+            message = ScaniaException(e, sys)
+
+            logger.error(message.error_message)
+
+            raise message.error_message
+
+    def get_df_from_object(self, object):
+        try:
+            content = self.read_object(object, make_readable=True)
+
+            df = read_csv(content)
+
+            return df
+
+        except Exception as e:
+            message = ScaniaException(e, sys)
+
+            logger.error(message.error_message)
+
+            raise message.error_message
+
+    def read_csv(self, fname, bucket):
+        try:
+            csv_obj = self.get_file_object(fname, bucket)
+
+            df = self.get_df_from_object(csv_obj,)
+
+            return df
 
         except Exception as e:
             message = ScaniaException(e, sys)
