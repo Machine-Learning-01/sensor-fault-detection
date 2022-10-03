@@ -6,7 +6,7 @@ from os import environ
 import pandas as pd
 from pymongo import MongoClient
 
-from scania_truck.exception import ScaniaException
+from sensor.exception import SensorException
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class MongoDBOperation:
             return db
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -49,7 +49,7 @@ class MongoDBOperation:
             return collection
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def get_collection_as_dataframe(self, db_name, collection_name):
@@ -77,7 +77,7 @@ class MongoDBOperation:
             return df
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def insert_dataframe_as_record(self, data_frame, db_name, collection_name):
@@ -104,5 +104,5 @@ class MongoDBOperation:
             )
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

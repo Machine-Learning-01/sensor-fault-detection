@@ -1,15 +1,15 @@
-from scania_truck.components.data_ingestion import DataIngestion
-from scania_truck.utils.read_params import read_params
-from scania_truck.exception import ScaniaException
+from sensor.components.data_ingestion import DataIngestion
+from sensor.utils.read_params import read_params
+from sensor.exception import SensorException
 import logging
 import sys
 from pandas import DataFrame
-from scania_truck.cloud_storage.s3_operations import S3Operation
+from sensor.cloud_storage.s3_operations import S3Operation
 
 logger = logging.getLogger(__name__)
 
 
-class ScaniaData:
+class SensorData:
     def __init__(self):
         self.data_ingestion = DataIngestion()
 
@@ -19,7 +19,7 @@ class ScaniaData:
 
         self.pred_data_csv_file = self.config["pred_data_csv_file"]
 
-        self.pred_data_bucket = self.config["s3_bucket"]["scania-truck-pred_bucket"]
+        self.pred_data_bucket = self.config["s3_bucket"]["Sensor-truck-pred_bucket"]
 
         self.drop_columns = self.schema_config["drop_columns"]
 
@@ -34,11 +34,11 @@ class ScaniaData:
             return pred_df
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
 
-class ScaniaTruckClassifier:
+class SensorTruckClassifier:
     def __init__(self):
         self.s3 = S3Operation()
 
@@ -47,12 +47,12 @@ class ScaniaTruckClassifier:
         self.model_file = self.config["model_file_name"]
 
         self.io_files_bucket = self.config["s3_bucket"][
-            "scania_truck_input_files_bucket"
+            "Sensor_truck_input_files_bucket"
         ]
 
-        self.pred_data = ScaniaData()
+        self.pred_data = SensorData()
 
-    def predict(self, X):
+    def predict(self):
         logging.info("Entered predict method of CarPricePredictor class")
 
         try:
@@ -67,7 +67,7 @@ class ScaniaTruckClassifier:
             result = DataFrame(list((result)), columns=["Prediction"])
 
             self.s3.upload_df_as_csv(
-                result, "scania_results.csv", "scania_results.csv", "scania-io-files"
+                result, "Sensor_results.csv", "Sensor_results.csv", "Sensor-io-files"
             )
 
             logging.info(
@@ -77,5 +77,5 @@ class ScaniaTruckClassifier:
             logging.info("Exited predict method of CarPricePredictor class")
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

@@ -9,13 +9,13 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils import all_estimators
 from yaml import safe_dump
 
-from scania_truck.cloud_storage.s3_operations import S3Operation
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.read_params import read_params
+from sensor.cloud_storage.s3_operations import S3Operation
+from sensor.exception import SensorException
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
-config_ = "scania_truck/config/params.yaml"
+config_ = "Sensor_truck/config/params.yaml"
 
 
 class MainUtils:
@@ -29,7 +29,7 @@ class MainUtils:
         self.artifacts_dir = self.config["artifacts_dir"]
 
         self.io_files_bucket = self.config["s3_bucket"][
-            "scania_truck_input_files_bucket"
+            "Sensor_truck_input_files_bucket"
         ]
 
     def get_tuned_model(self, model_name, train_x, train_y, test_x, test_y):
@@ -58,7 +58,7 @@ class MainUtils:
             return self.model_score
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def get_base_model(self, model_name):

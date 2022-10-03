@@ -1,7 +1,7 @@
 from yaml import safe_load
 
 
-def read_params(config_path="scania_truck/config/params.yaml"):
+def read_params(config_path="Sensor_truck/config/params.yaml"):
 
     method_name = read_params.__name__
 

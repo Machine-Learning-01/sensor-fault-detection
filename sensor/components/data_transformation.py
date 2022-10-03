@@ -4,23 +4,22 @@ import sys
 
 import numpy as np
 from sklearn.impute import SimpleImputer
-from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler
 from imblearn.combine import SMOTETomek
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from scania_truck.components.data_ingestion import DataIngestion
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.main_utils import MainUtils
-from scania_truck.utils.read_params import read_params
+from sensor.components.data_ingestion import DataIngestion
+from sensor.exception import SensorException
+from sensor.utils.main_utils import MainUtils
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
 
 class DataTransformation:
     def __init__(self):
-        self.schema_file = read_params("scania_truck/config/schema.yaml")
+        self.schema_file = read_params("Sensor_truck/config/schema.yaml")
 
         self.data_ingestion = DataIngestion()
 
@@ -59,7 +58,7 @@ class DataTransformation:
             return preprocessor
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def initiate_data_transformation(self, train_set, test_set):
@@ -141,7 +140,7 @@ class DataTransformation:
             ]
 
             preprocessor_obj_file_name = (
-                self.artifacts_dir + "/" + "scania_truck_preprocessor" + ".pkl"
+                self.artifacts_dir + "/" + "Sensor_truck_preprocessor" + ".pkl"
             )
 
             self.utils.save_object(preprocessor_obj_file_name, preprocessor)
@@ -155,5 +154,5 @@ class DataTransformation:
             return train_arr, test_arr
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

@@ -1,9 +1,9 @@
 import logging
 import sys
 
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.main_utils import MainUtils
-from scania_truck.utils.read_params import read_params
+from sensor.exception import SensorException
+from sensor.utils.main_utils import MainUtils
+from sensor.utils.read_params import read_params
 
 
 logger = logging.getLogger(__name__)
@@ -38,5 +38,5 @@ class ModelFinder:
             return tuned_model_list
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

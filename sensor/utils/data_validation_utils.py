@@ -1,12 +1,12 @@
 import logging
 import sys
 
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.read_params import read_params
+from sensor.exception import SensorException
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
-schema_file = read_params("scania_truck/config/schema.yaml")
+schema_file = read_params("Sensor_truck/config/schema.yaml")
 
 
 def validate_schema_columns(df):
@@ -24,7 +24,7 @@ def validate_schema_columns(df):
         return validation_status
 
     except Exception as e:
-        message = ScaniaException(e, sys)
+        message = SensorException(e, sys)
         raise message.error_message
 
 
@@ -43,5 +43,5 @@ def validate_schema_for_numerical_datatype(df):
         return validation_status
 
     except Exception as e:
-        message = ScaniaException(e, sys)
+        message = SensorException(e, sys)
         raise message.error_message

@@ -5,16 +5,16 @@ import sys
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.data_validation_utils import *
-from scania_truck.utils.read_params import read_params
+from sensor.exception import SensorException
+from sensor.utils.data_validation_utils import *
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
 
 class DataValidation:
     def __init__(self, train_set, test_set):
-        self.schema_config = read_params("scania_truck/config/schema.yaml")
+        self.schema_config = read_params("Sensor_truck/config/schema.yaml")
 
         self.train_set = train_set
 
@@ -43,7 +43,7 @@ class DataValidation:
             return train_schema_status, test_schema_status
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def validate_dataset_schema_for_numerical_datatype(self):
@@ -73,7 +73,7 @@ class DataValidation:
             return train_num_datatype_status, test_num_datatype_status
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -100,7 +100,7 @@ class DataValidation:
                 return json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def initiate_data_validation(self):
@@ -146,5 +146,5 @@ class DataValidation:
                 return False
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

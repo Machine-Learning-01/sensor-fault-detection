@@ -1,13 +1,13 @@
 import logging
 import sys
 
-from scania_truck.components.data_ingestion import DataIngestion
-from scania_truck.components.data_transformation import DataTransformation
-from scania_truck.components.data_validation import DataValidation
-from scania_truck.components.model_trainer import ModelTrainer
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.main_utils import MainUtils
-from scania_truck.utils.read_params import read_params
+from sensor.components.data_ingestion import DataIngestion
+from sensor.components.data_transformation import DataTransformation
+from sensor.components.data_validation import DataValidation
+from sensor.components.model_trainer import ModelTrainer
+from sensor.exception import SensorException
+from sensor.utils.main_utils import MainUtils
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class TrainPipeline:
             return train_data,test_set
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -44,7 +44,7 @@ class TrainPipeline:
             return data_validation.initiate_data_validation()
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -61,7 +61,7 @@ class TrainPipeline:
             return train_set, test_set
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -72,7 +72,7 @@ class TrainPipeline:
             model_trainer.initiate_model_pusher()
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     @staticmethod
@@ -83,7 +83,7 @@ class TrainPipeline:
             model_trainer.initiate_model_trainer(train_set, test_set)
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def run_pipeline(self):
@@ -100,5 +100,5 @@ class TrainPipeline:
                 self.start_model_pusher()
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

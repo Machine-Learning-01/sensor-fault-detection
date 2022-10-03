@@ -2,11 +2,11 @@ import logging
 import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
-from scania_truck.cloud_storage.s3_operations import S3Operation
+from sensor.cloud_storage.s3_operations import S3Operation
 
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.mongo_operations import MongoDBOperation
-from scania_truck.utils.read_params import read_params
+from sensor.exception import SensorException
+from sensor.utils.mongo_operations import MongoDBOperation
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class DataIngestion:
         
         self.s3 = S3Operation()
         
-        self.schema_config = read_params("scania_truck/config/schema.yaml")
+        self.schema_config = read_params("Sensor_truck/config/schema.yaml")
 
         self.db_name = self.config["mongo"]["db_name"]
 
@@ -43,7 +43,7 @@ class DataIngestion:
             return train_set, test_set
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def get_data_from_mongodb(self):
@@ -67,7 +67,7 @@ class DataIngestion:
             return df
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def initiate_data_ingestion(self):
@@ -89,5 +89,5 @@ class DataIngestion:
             return train_set, test_set
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message

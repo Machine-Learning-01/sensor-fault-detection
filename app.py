@@ -1,10 +1,12 @@
+from symbol import pass_stmt
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from uvicorn import run as app_run
 from fastapi import FastAPI
 
-from scania_truck.pipeline.train_pipeline import TrainPipeline
-from scania_truck.utils.read_params import read_params
+from sensor.pipeline.train_pipeline import TrainPipeline
+from sensor.utils.read_params import read_params
+from sensor.components.model_predictor import SensorTruckClassifier
 
 app = FastAPI()
 
@@ -32,24 +34,16 @@ async def trainRouteClient():
 
     except Exception as e:
         return Response(f"Error Occurred! {e}")
+    
+    
+@app.get("/predict")
+async def predictRouteClient():
+    try:
+        model_predictor = 
+    
+    
+    except Exception as e:
+        return Response(f"Error Occurred! {e}")
 
-<<<<<<< HEAD
-
-
-# @app.get("/predict")
-# async def predictRouteClient():
-#     try:
-#         train_pipeline = TrainPipeline()
-
-#         train_pipeline.run_pipeline()
-
-#         return Response("Training successful !!")
-
-#     except Exception as e:
-#         return Response(f"Error Occurred! {e}")
-
-
-=======
->>>>>>> 2850d9d2f2879ddb38804eafdc239937b13f0622
 if __name__ == "__main__":
     app_run(app, host="0.0.0.0", port=8080)

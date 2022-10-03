@@ -8,8 +8,8 @@ from pandas import read_csv
 import boto3
 from botocore.exceptions import ClientError
 
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.read_params import read_params
+from sensor.exception import SensorException
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class S3Operation:
             return conv_func()
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -53,7 +53,7 @@ class S3Operation:
             return bucket
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -72,7 +72,7 @@ class S3Operation:
             return file_objs
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -97,7 +97,7 @@ class S3Operation:
             return model
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -127,7 +127,7 @@ class S3Operation:
                 pass
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -145,7 +145,7 @@ class S3Operation:
                 self.upload_file(local_f, dest_f, bucket, remove=False)
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -158,7 +158,7 @@ class S3Operation:
             self.upload_file(local_fname, bucket_fname, bucket)
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -173,7 +173,7 @@ class S3Operation:
             return df
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 
@@ -188,7 +188,7 @@ class S3Operation:
             return df
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
 
             logger.error(message.error_message)
 

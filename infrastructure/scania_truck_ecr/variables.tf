@@ -1,5 +1,5 @@
 variable "car_price_ecr_name" {
-  default = "scania-truck"
+  default = "Sensor-truck"
   type    = string
 }
 

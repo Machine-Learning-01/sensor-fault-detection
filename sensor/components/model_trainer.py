@@ -1,16 +1,16 @@
 import logging
 import sys
 
-from scania_truck.cloud_storage.s3_operations import S3Operation
-from scania_truck.components.tuner import ModelFinder
-from scania_truck.exception import ScaniaException
-from scania_truck.utils.main_utils import MainUtils
-from scania_truck.utils.read_params import read_params
+from sensor.cloud_storage.s3_operations import S3Operation
+from sensor.components.tuner import ModelFinder
+from sensor.exception import SensorException
+from sensor.utils.main_utils import MainUtils
+from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
 
-class ScaniaTruckModel:
+class SensorTruckModel:
     def __init__(self, preprocessing_object, trained_model_object):
 
         self.preprocessing_object = preprocessing_object
@@ -18,7 +18,7 @@ class ScaniaTruckModel:
         self.trained_model_object = trained_model_object
 
     def predict(self, X):
-        logger.info("Entered predict method of ScaniaTruckModel class")
+        logger.info("Entered predict method of SensorTruckModel class")
 
         try:
             logger.info("Using the trained model to get predictions")
@@ -30,7 +30,7 @@ class ScaniaTruckModel:
             return self.trained_model_object.predict(transformed_feature)
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def __repr__(self):
@@ -53,7 +53,7 @@ class ModelTrainer:
         self.artifacts_dir = self.config["artifacts_dir"]
 
         self.io_files_bucket = self.config["s3_bucket"][
-            "scania_truck_input_files_bucket"
+            "Sensor_truck_input_files_bucket"
         ]
 
         self.preprocessor_obj_file_name = self.config["preprocessor_obj_file_name"]
@@ -86,20 +86,20 @@ class ModelTrainer:
 
                 logger.info("Updating model score in yaml file")
 
-                scania_truck_model = ScaniaTruckModel(
+                Sensor_truck_model = SensorTruckModel(
                     preprocessing_object=preprocessing_obj,
                     trained_model_object=best_model,
                 )
 
                 logger.info(
-                    "Created scania truck model object with preprocessor and model"
+                    "Created Sensor truck model object with preprocessor and model"
                 )
 
                 best_model_file_path = self.artifacts_dir + "/" + "model" + ".sav"
 
                 logger.info("Created best model file path.")
 
-                self.utils.save_object(best_model_file_path, scania_truck_model)
+                self.utils.save_object(best_model_file_path, Sensor_truck_model)
 
                 logger.info("Saved the best model object in artifacts directory.")
 
@@ -109,7 +109,7 @@ class ModelTrainer:
                 raise "No best model found with score more than base score "
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
 
     def initiate_model_pusher(self):
@@ -125,5 +125,5 @@ class ModelTrainer:
             logger.info("Exited initiate_model_pusher method of ModelTrainer class")
 
         except Exception as e:
-            message = ScaniaException(e, sys)
+            message = SensorException(e, sys)
             raise message.error_message
