@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+scania_truck/artifacts
+
+scania_truck/logs
+
 # Distribution / packaging
 .Python
 build/
