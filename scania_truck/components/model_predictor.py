@@ -1,4 +1,3 @@
-from ast import Try
 from scania_truck.components.data_ingestion import DataIngestion
 from scania_truck.utils.read_params import read_params
 from scania_truck.exception import ScaniaException
@@ -36,9 +35,6 @@ class ScaniaData:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
 
@@ -82,7 +78,4 @@ class ScaniaTruckClassifier:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

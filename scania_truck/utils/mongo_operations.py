@@ -32,12 +32,10 @@ class MongoDBOperation:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
-    def get_collection(self, database, collection_name):
+    @staticmethod
+    def get_collection(database, collection_name):
 
         logger.info("Entered get_collection method of MongoDB_Operation class")
 
@@ -52,9 +50,6 @@ class MongoDBOperation:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def get_collection_as_dataframe(self, db_name, collection_name):
@@ -83,9 +78,6 @@ class MongoDBOperation:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def insert_dataframe_as_record(self, data_frame, db_name, collection_name):
@@ -101,7 +93,7 @@ class MongoDBOperation:
 
             collection = database.get_collection(collection_name)
 
-            logger.info("Inserting records to MongoDB",)
+            logger.info("Inserting records to MongoDB", )
 
             collection.insert_many(records)
 
@@ -113,7 +105,4 @@ class MongoDBOperation:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

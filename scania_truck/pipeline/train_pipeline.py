@@ -33,11 +33,7 @@ class TrainPipeline:
             return train_data,test_set
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     @staticmethod
@@ -48,11 +44,7 @@ class TrainPipeline:
             return data_validation.initiate_data_validation()
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     @staticmethod
@@ -69,11 +61,7 @@ class TrainPipeline:
             return train_set, test_set
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     @staticmethod
@@ -85,12 +73,10 @@ class TrainPipeline:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
-    def start_model_trainer(self, train_set, test_set):
+    @staticmethod
+    def start_model_trainer(train_set, test_set):
         try:
             model_trainer = ModelTrainer()
 
@@ -98,11 +84,8 @@ class TrainPipeline:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
-        
+
     def run_pipeline(self):
         try:
             train_set, test_set = self.start_data_ingestion()
@@ -118,7 +101,4 @@ class TrainPipeline:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

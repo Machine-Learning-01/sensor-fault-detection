@@ -30,11 +30,7 @@ class ScaniaTruckModel:
             return self.trained_model_object.predict(transformed_feature)
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def __repr__(self):
@@ -113,11 +109,7 @@ class ModelTrainer:
                 raise "No best model found with score more than base score "
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def initiate_model_pusher(self):
@@ -133,9 +125,5 @@ class ModelTrainer:
             logger.info("Exited initiate_model_pusher method of ModelTrainer class")
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
