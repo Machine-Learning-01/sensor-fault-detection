@@ -16,10 +16,10 @@ mongo_op = MongoDBOperation()
 class DataIngestion:
     def __init__(self):
         self.config = read_params()
-        
+
         self.s3 = S3Operation()
-        
-        self.schema_config = read_params("Sensor_truck/config/schema.yaml")
+
+        self.schema_config = read_params("sensor/config/schema.yaml")
 
         self.db_name = self.config["mongo"]["db_name"]
 
@@ -43,8 +43,7 @@ class DataIngestion:
             return train_set, test_set
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def get_data_from_mongodb(self):
         logger.info("Entered get_data_from_mongodb method of Data_Ingestion class")
@@ -67,8 +66,7 @@ class DataIngestion:
             return df
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def initiate_data_ingestion(self):
         logger.info("Entered initiate_data_ingestion method of Data_Ingestion class")
@@ -89,5 +87,4 @@ class DataIngestion:
             return train_set, test_set
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e

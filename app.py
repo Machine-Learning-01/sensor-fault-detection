@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 from sensor.pipeline.train_pipeline import TrainPipeline
 from sensor.utils.read_params import read_params
-from sensor.components.model_predictor import SensorTruckClassifier
+from sensor.components.model_predictor import SensorClassifier
 
 app = FastAPI()
 
@@ -34,16 +34,20 @@ async def trainRouteClient():
 
     except Exception as e:
         return Response(f"Error Occurred! {e}")
-    
-    
+
+
 @app.get("/predict")
 async def predictRouteClient():
     try:
-        model_predictor = 
-    
-    
+        model_predictor = SensorClassifier()
+
+        model_predictor.predict()
+        
+        return Response("Prediction successful and predictions are stored in s3 bucket !!")
+
     except Exception as e:
         return Response(f"Error Occurred! {e}")
+
 
 if __name__ == "__main__":
     app_run(app, host="0.0.0.0", port=8080)

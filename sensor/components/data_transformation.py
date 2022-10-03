@@ -6,7 +6,6 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import RobustScaler
 from imblearn.combine import SMOTETomek
-import pandas as pd
 from sklearn.pipeline import Pipeline
 
 from sensor.components.data_ingestion import DataIngestion
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class DataTransformation:
     def __init__(self):
-        self.schema_file = read_params("Sensor_truck/config/schema.yaml")
+        self.schema_file = read_params("sensor/config/schema.yaml")
 
         self.data_ingestion = DataIngestion()
 
@@ -33,7 +32,7 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         logger.info(
-            "Entered get_data_transformer_object method of Data_Ingestion class"
+            "Entered get_data_transformer_object method of DataTransformation class"
         )
 
         try:
@@ -52,14 +51,13 @@ class DataTransformation:
             logger.info("Created preprocessor object from ColumnTransformer")
 
             logger.info(
-                "Exited get_data_transformer_object method of Data_Ingestion class"
+                "Exited get_data_transformer_object method of DataTransformation class"
             )
 
             return preprocessor
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def initiate_data_transformation(self, train_set, test_set):
         logger.info(
@@ -140,7 +138,7 @@ class DataTransformation:
             ]
 
             preprocessor_obj_file_name = (
-                self.artifacts_dir + "/" + "Sensor_truck_preprocessor" + ".pkl"
+                self.artifacts_dir + "/" + "sensor_preprocessor" + ".pkl"
             )
 
             self.utils.save_object(preprocessor_obj_file_name, preprocessor)
@@ -154,5 +152,4 @@ class DataTransformation:
             return train_arr, test_arr
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e

@@ -10,7 +10,7 @@ from sensor.utils.read_params import read_params
 logger = logging.getLogger(__name__)
 
 
-class SensorTruckModel:
+class SensorModel:
     def __init__(self, preprocessing_object, trained_model_object):
 
         self.preprocessing_object = preprocessing_object
@@ -30,8 +30,7 @@ class SensorTruckModel:
             return self.trained_model_object.predict(transformed_feature)
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def __repr__(self):
         return f"{type(self.trained_model_object).__name__}()"
@@ -52,9 +51,7 @@ class ModelTrainer:
 
         self.artifacts_dir = self.config["artifacts_dir"]
 
-        self.io_files_bucket = self.config["s3_bucket"][
-            "Sensor_truck_input_files_bucket"
-        ]
+        self.io_files_bucket = self.config["s3_bucket"]["sensor_input_files_bucket"]
 
         self.preprocessor_obj_file_name = self.config["preprocessor_obj_file_name"]
 
@@ -86,7 +83,7 @@ class ModelTrainer:
 
                 logger.info("Updating model score in yaml file")
 
-                Sensor_truck_model = SensorTruckModel(
+                sensor_model = SensorModel(
                     preprocessing_object=preprocessing_obj,
                     trained_model_object=best_model,
                 )
@@ -99,7 +96,7 @@ class ModelTrainer:
 
                 logger.info("Created best model file path.")
 
-                self.utils.save_object(best_model_file_path, Sensor_truck_model)
+                self.utils.save_object(best_model_file_path, sensor_model)
 
                 logger.info("Saved the best model object in artifacts directory.")
 
@@ -109,8 +106,7 @@ class ModelTrainer:
                 raise "No best model found with score more than base score "
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def initiate_model_pusher(self):
         logger.info("Entered initiate_model_pusher method of ModelTrainer class")
@@ -125,5 +121,4 @@ class ModelTrainer:
             logger.info("Exited initiate_model_pusher method of ModelTrainer class")
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e

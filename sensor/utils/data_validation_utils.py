@@ -6,7 +6,7 @@ from sensor.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
 
-schema_file = read_params("Sensor_truck/config/schema.yaml")
+schema_file = read_params("sensor/config/schema.yaml")
 
 
 def validate_schema_columns(df):

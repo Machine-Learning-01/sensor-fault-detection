@@ -6,6 +6,6 @@ terraform {
   }
 }
 
-module "Sensor_truck_ec2" {
-  source = "./Sensor_truck_ec2"
+module "sensor_ec2" {
+  source = "./sensor_ec2"
 }

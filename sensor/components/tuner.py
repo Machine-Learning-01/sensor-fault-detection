@@ -16,8 +16,13 @@ class ModelFinder:
         self.utils = MainUtils()
 
     def get_trained_models(self, X_data, Y_data):
+
+        logger.info("Entered the get_trained_models method of ModelFinder class")
+
         try:
             models_list = list(self.config["train_model"].keys())
+
+            logger.info("Got model list from the config file")
 
             x_train, y_train, x_test, y_test = (
                 X_data[:, :-1],
@@ -35,8 +40,10 @@ class ModelFinder:
                 for model_name in models_list
             ]
 
+            logger.info("Got trained model list")
+
+            logger.info("Exited the get_trained_models method of ModelFinder class")
             return tuned_model_list
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e

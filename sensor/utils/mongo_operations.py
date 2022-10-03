@@ -31,8 +31,7 @@ class MongoDBOperation:
             return db
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     @staticmethod
     def get_collection(database, collection_name):
@@ -49,8 +48,7 @@ class MongoDBOperation:
             return collection
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def get_collection_as_dataframe(self, db_name, collection_name):
 
@@ -77,8 +75,7 @@ class MongoDBOperation:
             return df
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def insert_dataframe_as_record(self, data_frame, db_name, collection_name):
 
@@ -93,7 +90,7 @@ class MongoDBOperation:
 
             collection = database.get_collection(collection_name)
 
-            logger.info("Inserting records to MongoDB", )
+            logger.info("Inserting records to MongoDB",)
 
             collection.insert_many(records)
 
@@ -104,5 +101,4 @@ class MongoDBOperation:
             )
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e

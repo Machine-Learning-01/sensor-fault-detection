@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class DataValidation:
     def __init__(self, train_set, test_set):
-        self.schema_config = read_params("Sensor_truck/config/schema.yaml")
+        self.schema_config = read_params("sensor/config/schema.yaml")
 
         self.train_set = train_set
 
@@ -43,8 +43,7 @@ class DataValidation:
             return train_schema_status, test_schema_status
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def validate_dataset_schema_for_numerical_datatype(self):
         logger.info(
@@ -73,8 +72,7 @@ class DataValidation:
             return train_num_datatype_status, test_num_datatype_status
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     @staticmethod
     def detect_dataset_drift(reference, production, get_ratio=False):
@@ -100,8 +98,7 @@ class DataValidation:
                 return json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
 
     def initiate_data_validation(self):
         logger.info("Entered initiate_data_validation method of Data_Validation class")
@@ -132,10 +129,10 @@ class DataValidation:
             logger.info("Validated dataset schema for numerical datatype")
 
             if (
-                    schema_train_num_cols_status is True
-                    and schema_test_num_cols_status is True
-                    and schema_train_col_status is True
-                    and schema_test_col_status is True
+                schema_train_num_cols_status is True
+                and schema_test_num_cols_status is True
+                and schema_train_col_status is True
+                and schema_test_col_status is True
             ):
 
                 logger.info("Dataset schema validation completed")
@@ -146,5 +143,4 @@ class DataValidation:
                 return False
 
         except Exception as e:
-            message = SensorException(e, sys)
-            raise message.error_message
+            raise SensorException(e, sys) from e
