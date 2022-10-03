@@ -38,9 +38,5 @@ class ModelFinder:
             return tuned_model_list
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

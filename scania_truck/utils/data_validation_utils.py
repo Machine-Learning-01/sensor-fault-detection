@@ -25,9 +25,6 @@ def validate_schema_columns(df):
 
     except Exception as e:
         message = ScaniaException(e, sys)
-
-        logger.error(message.error_message)
-
         raise message.error_message
 
 
@@ -47,7 +44,4 @@ def validate_schema_for_numerical_datatype(df):
 
     except Exception as e:
         message = ScaniaException(e, sys)
-
-        logger.error(message.error_message)
-
         raise message.error_message

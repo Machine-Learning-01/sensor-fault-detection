@@ -3,5 +3,8 @@ scikit-learn==1.1.2
 uvicorn[standard]
 fastapi==0.78.0
 evidently==0.1.58.dev0
+xgboost==1.6.2
+dill==0.3.5.1
+pymongo==4.2.0
 imblearn
 -e .

@@ -1,5 +1,4 @@
 import logging
-import os
 import shutil
 import sys
 
@@ -11,6 +10,7 @@ from sklearn.utils import all_estimators
 from yaml import safe_dump
 
 from scania_truck.cloud_storage.s3_operations import S3Operation
+from scania_truck.exception import ScaniaException
 from scania_truck.utils.read_params import read_params
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,8 @@ class MainUtils:
             return self.model_score
 
         except Exception as e:
-            raise e
+            message = ScaniaException(e, sys)
+            raise message.error_message
 
     def get_base_model(self, model_name):
         try:
@@ -92,7 +93,8 @@ class MainUtils:
         except Exception as e:
             raise e
 
-    def save_object(self, file_path, obj):
+    @staticmethod
+    def save_object(file_path, obj):
         try:
             with open(file_path, "wb") as file_obj:
                 dill.dump(obj, file_obj)
@@ -100,7 +102,8 @@ class MainUtils:
         except Exception as e:
             raise e
 
-    def get_best_model_with_name_and_score(self, lst):
+    @staticmethod
+    def get_best_model_with_name_and_score(lst):
         try:
             best_score = max(lst)[0]
 
@@ -111,7 +114,8 @@ class MainUtils:
         except Exception as e:
             raise e
 
-    def load_object(self, file_path):
+    @staticmethod
+    def load_object(file_path):
         try:
             with open(file_path, "rb") as file_obj:
                 return dill.load(file_obj)
@@ -119,14 +123,16 @@ class MainUtils:
         except Exception as e:
             raise e
 
-    def create_artifacts_zip(self, file_name, folder_name):
+    @staticmethod
+    def create_artifacts_zip(file_name, folder_name):
         try:
             shutil.make_archive(file_name, "zip", folder_name)
 
         except Exception as e:
             raise e
 
-    def unzip_file(self, filename, folder_name):
+    @staticmethod
+    def unzip_file(filename, folder_name):
         try:
             shutil.unpack_archive(filename, folder_name)
 

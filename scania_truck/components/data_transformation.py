@@ -59,11 +59,7 @@ class DataTransformation:
             return preprocessor
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def initiate_data_transformation(self, train_set, test_set):
@@ -159,9 +155,5 @@ class DataTransformation:
             return train_arr, test_arr
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

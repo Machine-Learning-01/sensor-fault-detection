@@ -43,11 +43,7 @@ class DataValidation:
             return train_schema_status, test_schema_status
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def validate_dataset_schema_for_numerical_datatype(self):
@@ -77,11 +73,7 @@ class DataValidation:
             return train_num_datatype_status, test_num_datatype_status
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     @staticmethod
@@ -108,78 +100,14 @@ class DataValidation:
                 return json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
-
-    # def initiate_data_validation(self):
-    #     logger.info("Entered initiate_data_validation method of Data_Validation class")
-
-    #     try:
-    #         logger.info("Initiated data validation for the dataset")
-
-    #         train_df = self.train_set
-    #         test_df = self.test_set
-
-    #         drift = self.detect_dataset_drift(train_df, test_df)
-
-    #         if drift is False:
-    #             (
-    #                 schema_train_col_status,
-    #                 schema_test_col_status,
-    #             ) = self.validate_dataset_schema_columns()
-
-    #             logger.info(
-    #                 f"Schema train cols status is {schema_train_col_status} and schema test cols status is {schema_test_col_status}"
-    #             )
-
-    #             logger.info("Validated dataset schema columns")
-
-    #             (
-    #                 schema_train_num_cols_status,
-    #                 schema_test_num_cols_status,
-    #             ) = self.validate_dataset_schema_for_numerical_datatype()
-
-    #             logger.info(
-    #                 f"Schema train numerical cols status is {schema_train_num_cols_status} and schema test numerical cols status is {schema_test_num_cols_status}"
-    #             )
-
-    #             logger.info("Validated dataset schema for numerical datatype")
-
-    #             if (
-    #                 schema_train_num_cols_status is True
-    #                 and schema_test_num_cols_status is True
-    #                 and schema_train_col_status is True
-    #                 and schema_test_col_status is True
-    #             ):
-    #                 logger.info("Dataset schema validation completed")
-
-    #             else:
-    #                 return True
-    #         else:
-    #             logger.error("Data Drift detected, data validation stopped")
-
-    #             return False
-
-    #     except Exception as e:
-    #         message = ScaniaException(e, sys)
-
-    #         logger.error(message.error_message)
-
-    #         raise message.error_message
 
     def initiate_data_validation(self):
         logger.info("Entered initiate_data_validation method of Data_Validation class")
 
         try:
             logger.info("Initiated data validation for the dataset")
-
-            train_df = self.train_set
-            
-            test_df = self.test_set
 
             (
                 schema_train_col_status,
@@ -204,10 +132,10 @@ class DataValidation:
             logger.info("Validated dataset schema for numerical datatype")
 
             if (
-                schema_train_num_cols_status is True
-                and schema_test_num_cols_status is True
-                and schema_train_col_status is True
-                and schema_test_col_status is True
+                    schema_train_num_cols_status is True
+                    and schema_test_num_cols_status is True
+                    and schema_train_col_status is True
+                    and schema_test_col_status is True
             ):
 
                 logger.info("Dataset schema validation completed")
@@ -218,9 +146,5 @@ class DataValidation:
                 return False
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

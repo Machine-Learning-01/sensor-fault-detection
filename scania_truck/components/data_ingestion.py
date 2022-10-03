@@ -41,11 +41,7 @@ class DataIngestion:
             return train_set, test_set
 
         except Exception as e:
-
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def get_data_from_mongodb(self):
@@ -70,9 +66,6 @@ class DataIngestion:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message
 
     def initiate_data_ingestion(self):
@@ -95,7 +88,4 @@ class DataIngestion:
 
         except Exception as e:
             message = ScaniaException(e, sys)
-
-            logger.error(message.error_message)
-
             raise message.error_message

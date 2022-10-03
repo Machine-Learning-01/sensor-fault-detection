@@ -13,5 +13,5 @@ def read_params(config_path="scania_truck/config/params.yaml"):
 
     except Exception as e:
         raise Exception(
-            f"Exception occured in {__file__}, Method : {method_name}, Error : {str(e)}"
+            f"Exception occurred in {__file__}, Method : {method_name}, Error : {str(e)}"
         )
