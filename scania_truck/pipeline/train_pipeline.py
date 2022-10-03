@@ -20,24 +20,17 @@ class TrainPipeline:
 
         self.artifacts_dir = self.config["artifacts_dir"]
 
-    @staticmethod
-    def start_data_ingestion():
+    def start_data_ingestion(self):
         logger.info("Entered the start_data_ingestion method of Pipeline class")
 
         try:
             logging.info("Getting the data from mongodb")
 
             data_ingestion = DataIngestion()
-
-            df = data_ingestion.get_data_from_mongodb()
-
-            train_set, test_set = data_ingestion.split_data_as_train_test(df)
-
-            logger.info("Got the data from mongodb")
-
-            logger.info("Exited the start_data_ingestion method of Pipeline class")
-
-            return train_set, test_set
+            
+            train_data,test_set = data_ingestion.initiate_data_ingestion()
+            
+            return train_data,test_set
 
         except Exception as e:
 
@@ -51,8 +44,6 @@ class TrainPipeline:
     def start_data_validation(train_set, test_set):
         try:
             data_validation = DataValidation(train_set, test_set)
-
-            logger.info("Exited the start_data_validation method of Pipeline class")
 
             return data_validation.initiate_data_validation()
 

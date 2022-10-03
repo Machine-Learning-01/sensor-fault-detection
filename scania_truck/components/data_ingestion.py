@@ -18,13 +18,13 @@ class DataIngestion:
     def __init__(self):
         self.config = read_params()
 
-        self.schema_file = read_params("scania_truck/config/schema.yaml")
+        self.schema_config = read_params("scania_truck/config/schema.yaml")
 
         self.db_name = self.config["mongo"]["db_name"]
 
         self.collection_name = self.config["mongo"]["collection_name"]
 
-        self.drop_cols = list(self.schema_file["drop_columns"])
+        self.drop_cols = self.schema_config["drop_columns"]
 
         self.s3 = S3Operation()
 
