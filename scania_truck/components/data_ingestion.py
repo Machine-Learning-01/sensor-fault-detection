@@ -16,13 +16,10 @@ mongo_op = MongoDBOperation()
 class DataIngestion:
     def __init__(self):
         self.config = read_params()
-<<<<<<< HEAD
-
-        self.schema_config = read_params("scania_truck/config/schema.yaml")
-=======
+        
         self.s3 = S3Operation()
+        
         self.schema_file = read_params("scania_truck/config/schema.yaml")
->>>>>>> 6d9d288ae9fd9109ec38541389d30357ae55a309
 
         self.db_name = self.config["mongo"]["db_name"]
 
