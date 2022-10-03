@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "io_files" {
   type    = string
-  default = "car-price-io-files"
+  default = "scania-truck-io-files"
 }
 
 variable "aws_account_id" {
