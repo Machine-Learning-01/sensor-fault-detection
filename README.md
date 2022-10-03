@@ -1,4 +1,6 @@
 # Sensor-Fault-Detection
+### Problem Statement
+### Solution Proposed 
 
 In this data science project, The system in focus is the Air Pressure system (APS) which generates pressurized air that are utilized in various functions in a truck, such as braking and gear changes. The datasets positive class corresponds to component failures for a specific component of the APS system. The negative class corresponds to trucks with failures for components not related to the APS system.
 
@@ -11,7 +13,8 @@ The problem is to reduce the cost due to unnecessary repairs. So it is required 
 4. Docker
 5. MongoDB
 
-## Deployment 
+## Infrastructure Required.
+
 1. AWS S3
 2. AWS EC2
 3. AWS ECR
@@ -82,7 +85,7 @@ http://localhost:8080/predict
 
 ```
 
-## Run using Docker 
+## Run locally
 
 1. Check if the Dockerfile is availabel in the project directory
 
