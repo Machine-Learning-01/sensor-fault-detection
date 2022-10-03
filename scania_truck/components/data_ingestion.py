@@ -25,7 +25,8 @@ class DataIngestion:
 
         self.drop_cols = list(self.schema_file["drop_columns"])
 
-    def split_data_as_train_test(self, df):
+    @staticmethod
+    def split_data_as_train_test(df):
         logger.info("Entered split_data_as_train_test method of Data_Ingestion class")
 
         try:

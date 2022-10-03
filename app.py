@@ -7,11 +7,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from uvicorn import run as app_run
 
-from car_price.components.model_predictor import CarPriceData, CarPricePredictor
-from car_price.pipeline.train_pipeline import TrainPipeline
-from car_price.utils.main_utils import MainUtils
-from car_price.utils.read_params import read_params
-
 app = FastAPI()
 
 
