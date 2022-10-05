@@ -5,11 +5,8 @@ from uvicorn import run as app_run
 
 from sensor.components.model_predictor import SensorClassifier
 from sensor.pipeline.train_pipeline import TrainPipeline
-from sensor.utils.read_params import read_params
 
 app = FastAPI()
-
-config = read_params()
 
 origins = ["*"]
 
@@ -41,8 +38,10 @@ async def predictRouteClient():
         model_predictor = SensorClassifier()
 
         model_predictor.predict()
-        
-        return Response("Prediction successful and predictions are stored in s3 bucket !!")
+
+        return Response(
+            "Prediction successful and predictions are stored in s3 bucket !!"
+        )
 
     except Exception as e:
         return Response(f"Error Occurred! {e}")

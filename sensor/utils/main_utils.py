@@ -1,75 +1,102 @@
-import logging
 import shutil
 import sys
+from typing import Dict, Tuple
 
 import dill
 import xgboost
+import yaml
+from pandas import DataFrame
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils import all_estimators
 from yaml import safe_dump
 
-from sensor.cloud_storage.s3_operations import S3Operation
+from sensor.constant import MODEL_CONFIG_FILE, SCHEMA_CONFIG_FILE
+from sensor.entity.config_entity import TunerConfig
 from sensor.exception import SensorException
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
-
-config_ = "sensor/config/params.yaml"
+from sensor.logger import logging
 
 
 class MainUtils:
-    def __init__(self):
-        self.s3 = S3Operation()
+    def __init__(self) -> None:
+        self.tuner_config = TunerConfig()
 
-        self.config = read_params()
-
-        self.tuner_kwargs = self.config["model_utils"]
-
-        self.artifacts_dir = self.config["artifacts_dir"]
-
-        self.io_files_bucket = self.config["s3_bucket"]["sensor_input_files_bucket"]
-
-    def get_tuned_model(self, model_name, train_x, train_y, test_x, test_y):
-        logger.info("Entered the get_tuned_model method of MainUtils class")
-
+    def read_yaml_file(self, filename: str) -> dict:
         try:
-            self.model = self.get_base_model(model_name)
-
-            self.model_best_params = self.get_model_params(self.model, train_x, train_y)
-
-            self.model.set_params(**self.model_best_params)
-
-            self.model.fit(train_x, train_y)
-
-            self.preds = self.model.predict(test_x)
-
-            self.model_score = self.get_model_score(test_y, self.preds)
-
-            logger.info("Entered the get_tuned_model method of MainUtils class")
-
-            return self.model_score, self.model, self.model.__class__.__name__
+            with open(filename, "rb") as yaml_file:
+                return yaml.safe_load(yaml_file)
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_model_score(self, test_y, preds):
-        logger.info("Entered the get_model_score method of MainUtils class")
-
+    def read_schema_config_file(self):
         try:
-            self.model_score = roc_auc_score(test_y, preds)
+            schema_config = self.read_yaml_file(SCHEMA_CONFIG_FILE)
 
-            logger.info("Model score is {}".format(self.model_score))
-
-            logger.info("Exited the get_model_score method of MainUtils class")
-
-            return self.model_score
+            return schema_config
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_base_model(self, model_name):
-        logger.info("Entered the get_base_model method of MainUtils class")
+    def read_model_config_file(self):
+        try:
+            schema_config = self.read_yaml_file(MODEL_CONFIG_FILE)
+
+            return schema_config
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    def get_tuned_model(
+        self,
+        model_name: str,
+        train_x: DataFrame,
+        train_y: DataFrame,
+        test_x: DataFrame,
+        test_y: DataFrame,
+    ) -> Tuple[float, object, str]:
+
+        logging.info("Entered the get_tuned_model method of MainUtils class")
+
+        try:
+            model = self.get_base_model(model_name)
+
+            model_best_params = self.get_model_params(model, train_x, train_y)
+
+            model.set_params(**model_best_params)
+
+            model.fit(train_x, train_y)
+
+            preds = model.predict(test_x)
+
+            model_score = self.get_model_score(test_y, preds)
+
+            logging.info("Entered the get_tuned_model method of MainUtils class")
+
+            return model_score, model, model.__class__.__name__
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    @staticmethod
+    def get_model_score(test_y: DataFrame, preds: DataFrame) -> float:
+        logging.info("Entered the get_model_score method of MainUtils class")
+
+        try:
+            model_score = roc_auc_score(test_y, preds)
+
+            logging.info("Model score is {}".format(model_score))
+
+            logging.info("Exited the get_model_score method of MainUtils class")
+
+            return model_score
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    @staticmethod
+    def get_base_model(model_name: str) -> object:
+        logging.info("Entered the get_base_model method of MainUtils class")
 
         try:
             if model_name.lower().startswith("xgb") is True:
@@ -80,59 +107,63 @@ class MainUtils:
 
                 model = all_estimators().__getitem__(model_idx)[1]()
 
-            logger.info("Exited the get_base_model method of MainUtils class")
+            logging.info("Exited the get_base_model method of MainUtils class")
 
             return model
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_model_params(self, model, x_train, y_train):
-        logger.info("Entered the get_model_params method of MainUtils class")
+    def get_model_params(
+        self, model: object, x_train: DataFrame, y_train: DataFrame
+    ) -> Dict:
+        logging.info("Entered the get_model_params method of MainUtils class")
 
         try:
             model_name = model.__class__.__name__
 
-            self.model_param_grid = self.config["train_model"][model_name]
+            model_config = self.read_yaml_file()
 
-            self.model_grid = GridSearchCV(
-                model, self.model_param_grid, **self.tuner_kwargs
+            model_param_grid = model_config["train_model"][model_name]
+
+            model_grid = GridSearchCV(
+                model, model_param_grid, self.tuner_config.__dict__
             )
 
-            self.model_grid.fit(x_train, y_train)
+            model_grid.fit(x_train, y_train)
 
-            logger.info("Exited the get_model_params method of MainUtils class")
+            logging.info("Exited the get_model_params method of MainUtils class")
 
-            return self.model_grid.best_params_
+            return model_grid.best_params_
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def save_object(file_path, obj):
-        logger.info("Entered the save_object method of MainUtils class")
+    def save_object(file_path: str, obj: object) -> None:
+        logging.info("Entered the save_object method of MainUtils class")
 
         try:
             with open(file_path, "wb") as file_obj:
                 dill.dump(obj, file_obj)
 
-            logger.info("Exited the save_object method of MainUtils class")
+            logging.info("Exited the save_object method of MainUtils class")
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def get_best_model_with_name_and_score(lst):
-        logger.info(
+    def get_best_model_with_name_and_score(model_list: list) -> Tuple[object, float]:
+        logging.info(
             "Entered the get_best_model_with_name_and_score method of MainUtils class"
         )
 
         try:
-            best_score = max(lst)[0]
+            best_score = max(model_list)[0]
 
-            best_model = max(lst)[1]
+            best_model = max(model_list)[1]
 
-            logger.info(
+            logging.info(
                 "Exited the get_best_model_with_name_and_score method of MainUtils class"
             )
 
@@ -142,14 +173,14 @@ class MainUtils:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def load_object(file_path):
-        logger.info("Entered the load_object method of MainUtils class")
+    def load_object(file_path: str) -> object:
+        logging.info("Entered the load_object method of MainUtils class")
 
         try:
             with open(file_path, "rb") as file_obj:
                 obj = dill.load(file_obj)
 
-            logger.info("Exited the load_object method of MainUtils class")
+            logging.info("Exited the load_object method of MainUtils class")
 
             return obj
 
@@ -157,40 +188,41 @@ class MainUtils:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def create_artifacts_zip(file_name, folder_name):
-        logger.info("Entered the create_artifacts_zip method of MainUtils class")
+    def create_artifacts_zip(file_name: str, folder_name: str) -> None:
+        logging.info("Entered the create_artifacts_zip method of MainUtils class")
 
         try:
             shutil.make_archive(file_name, "zip", folder_name)
 
-            logger.info("Exited the create_artifacts_zip method of MainUtils class")
+            logging.info("Exited the create_artifacts_zip method of MainUtils class")
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def unzip_file(filename, folder_name):
-        logger.info("Entered the unzip_file method of MainUtils class")
+    def unzip_file(filename: str, folder_name: str) -> None:
+        logging.info("Entered the unzip_file method of MainUtils class")
 
         try:
             shutil.unpack_archive(filename, folder_name)
 
-            logger.info("Exited the unzip_file method of MainUtils class")
+            logging.info("Exited the unzip_file method of MainUtils class")
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def update_model_score(self, best_model_score):
-        logger.info("Entered the update_model_score method of MainUtils class")
+    def update_model_score(self, best_model_score: float) -> None:
+        logging.info("Entered the update_model_score method of MainUtils class")
 
         try:
+            model_config = self.read_model_config_file()
 
-            self.config["base_model_score"] = str(best_model_score)
+            model_config["base_model_score"] = str(best_model_score)
 
-            with open(config_, "w+") as fp:
-                safe_dump(self.config, fp, sort_keys=False)
+            with open(MODEL_CONFIG_FILE, "w+") as fp:
+                safe_dump(model_config, fp, sort_keys=False)
 
-            logger.info("Exited the update_model_score method of MainUtils class")
+            logging.info("Exited the update_model_score method of MainUtils class")
 
         except Exception as e:
             raise SensorException(e, sys) from e

@@ -338,4 +338,3 @@ drop_columns:
   - bo_000
   - bn_000
 
-target_column: class
