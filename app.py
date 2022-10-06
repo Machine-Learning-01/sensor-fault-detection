@@ -5,10 +5,6 @@ from uvicorn import run as app_run
 
 from sensor.components.model_predictor import SensorClassifier
 from sensor.pipeline.train_pipeline import TrainPipeline
-<<<<<<< HEAD
-from sensor.utils.read_params import read_params
-=======
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
 app = FastAPI()
 

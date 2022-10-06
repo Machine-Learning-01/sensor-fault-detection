@@ -1,10 +1,7 @@
 import sys
 
 from sensor.cloud_storage.s3_operations import S3Operation
-<<<<<<< HEAD
-=======
 from sensor.constant import BEST_MODEL_PATH
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils
@@ -53,50 +50,11 @@ class ModelTrainer:
 
     def get_trained_models(self, X_data, Y_data):
 
-<<<<<<< HEAD
-        logger.info("Entered the get_trained_models method of ModelFinder class")
 
-        try:
-            models_list = list(self.config["train_model"].keys())
-
-            logger.info("Got model list from the config file")
-
-            x_train, y_train, x_test, y_test = (
-                X_data[:, :-1],
-                X_data[:, -1],
-                Y_data[:, :-1],
-                Y_data[:, -1],
-            )
-
-            tuned_model_list = [
-                (
-                    self.utils.get_tuned_model(
-                        model_name, x_train, y_train, x_test, y_test,
-                    )
-                )
-                for model_name in models_list
-            ]
-
-            logger.info("Got trained model list")
-
-            logger.info("Exited the get_trained_models method of ModelFinder class")
-
-            return tuned_model_list
-
-        except Exception as e:
-            raise SensorException(e, sys) from e
-
-    def initiate_model_trainer(self, train_set, test_set):
-        logger.info("Entered initiate_model_trainer method of ModelTrainer class")
-
-        try:            
-            list_of_trained_models = self.get_trained_models(train_set,test_set)
-=======
         logging.info("Entered the get_trained_models method of ModelFinder class")
 
         try:
             models_list = list(self.config["train_model"].keys())
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
             logging.info("Got model list from the config file")
 
@@ -119,17 +77,54 @@ class ModelTrainer:
             logging.info("Got trained model list")
 
             logging.info("Exited the get_trained_models method of ModelFinder class")
+
+            return tuned_model_list
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    def initiate_model_trainer(self,X_data, Y_data):
+        logging.info("Entered initiate_model_trainer method of ModelTrainer class")
+
+
+        logging.info("Entered the get_trained_models method of ModelFinder class")
+
+        try:
+            models_list = list(self.config["train_model"].keys())
+
+
+            logging.info("Got model list from the config file")
+
+            x_train, y_train, x_test, y_test = (
+                X_data[:, :-1],
+                X_data[:, -1],
+                Y_data[:, :-1],
+                Y_data[:, -1],
+            )
+
+            tuned_model_list = [
+                (
+                    self.utils.get_tuned_model(
+                        model_name, x_train, y_train, x_test, y_test,
+                    )
+                )
+                for model_name in models_list
+            ]
+
+            logging.info("Got trained model list")
+
+            logging.info("Exited the get_trained_models method of ModelFinder class")
+            
             return tuned_model_list
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
     def initiate_model_trainer(self, train_set, test_set):
-
         logging.info("Entered initiate_model_trainer method of ModelTrainer class")
 
         try:
-            lst = self.get_trained_models(train_set, test_set)
+            list_of_trained_models = self.get_trained_models(train_set, test_set)
 
             logging.info("Got a list of tuple of model score, model and model name")
 

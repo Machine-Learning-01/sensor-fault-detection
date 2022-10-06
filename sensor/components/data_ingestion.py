@@ -1,20 +1,13 @@
 import sys
-<<<<<<< HEAD
-=======
 from typing import Tuple
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
 import numpy as np
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
-<<<<<<< HEAD
-from sensor.cloud_storage.s3_operations import S3Operation
-=======
 from sensor.configuration.config import MongoDBOperation
 from sensor.constant import TRAIN_TEST_SPLIT_SIZE
 from sensor.entity.config_entity import DatabaseConfig
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils

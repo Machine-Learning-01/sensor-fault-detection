@@ -1,16 +1,5 @@
-<<<<<<< HEAD
 import logging
 import sys
-
-from pandas import DataFrame
-
-from sensor.cloud_storage.s3_operations import S3Operation
-from sensor.components.data_ingestion import DataIngestion
-from sensor.exception import SensorException
-from sensor.utils.read_params import read_params
-=======
-import sys
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
 from pandas import DataFrame
 
@@ -29,13 +18,12 @@ class SensorData:
 
         self.schema_config = self.utils.read_schema_config_file()
 
-<<<<<<< HEAD
+
         self.pred_data_csv_file = self.config["pred_data_csv_file"]
-=======
+
         # self.pred_data_csv_file = self.config["pred_data_csv_file"]
 
         # self.pred_data_bucket = self.config["s3_bucket"]["sensor_pred_bucket"]
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
         # self.drop_columns = self.schema_config["drop_columns"]
 
@@ -46,11 +34,7 @@ class SensorData:
         try:
             pred_df = self.s3.read_csv(self.pred_data_csv_file, self.pred_data_bucket)
 
-<<<<<<< HEAD
-            logger.info("Read prediction csv file from s3 bucket")
-=======
             logging.info("Read prediction csv file from s3 bucket")
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
             pred_df = pred_df.drop(self.drop_columns, axis=1)
 
@@ -58,11 +42,6 @@ class SensorData:
 
             logging.info("Exited the get_data method of SensorData class")
 
-<<<<<<< HEAD
-            logger.info("Exited the get_data method of SensorData class")
-
-=======
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
             return pred_df
 
         except Exception as e:

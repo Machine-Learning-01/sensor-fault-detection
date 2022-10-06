@@ -2,19 +2,12 @@ import os
 import pickle
 import sys
 from io import StringIO
-<<<<<<< HEAD
-
-import boto3
-from botocore.exceptions import ClientError
-from pandas import read_csv
-=======
 from typing import List, Union
 
 import boto3
 from botocore.exceptions import ClientError
 from mypy_boto3_s3.service_resource import Bucket
 from pandas import DataFrame, read_csv
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
 from sensor.constant import MODEL_SAVE_FORMAT
 from sensor.exception import SensorException
@@ -304,10 +297,7 @@ class S3Operation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-<<<<<<< HEAD
-    def read_csv(self, fname, bucket):
-        logger.info("Entered the read_csv method of S3Operations class")
-=======
+
     def read_csv(self, filename: str, bucket_name: str) -> DataFrame:
         """
         Method Name :   get_df_from_object
@@ -320,19 +310,14 @@ class S3Operation:
         Revisions   :   moved setup to cloud
         """
         logging.info("Entered the read_csv method of S3Operations class")
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
         try:
             csv_obj = self.get_file_object(filename, bucket_name)
 
             df = self.get_df_from_object(csv_obj)
 
-<<<<<<< HEAD
-            logger.info("Exited the read_csv method of S3Operations class")
-=======
             logging.info("Exited the read_csv method of S3Operations class")
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
-
+ 
             return df
 
         except Exception as e:

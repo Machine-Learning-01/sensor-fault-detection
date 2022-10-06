@@ -3,10 +3,7 @@ from typing import Union
 
 import numpy as np
 from imblearn.combine import SMOTETomek
-<<<<<<< HEAD
-=======
 from pandas import DataFrame
->>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
