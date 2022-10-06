@@ -143,9 +143,8 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    @staticmethod
     def detect_dataset_drift(
-        reference: DataFrame, production: DataFrame, get_ratio: bool = False
+        self, reference: DataFrame, production: DataFrame, get_ratio: bool = False
     ) -> Union[bool, float]:
         """
         Method Name :   detect_dataset_drift
@@ -197,6 +196,8 @@ class DataValidation:
         try:
             logging.info("Initiated data validation for the dataset")
 
+            drift = self.detect_dataset_drift(self.train_set, self.test_set)
+
             (
                 schema_train_col_status,
                 schema_test_col_status,
@@ -224,8 +225,8 @@ class DataValidation:
                 and schema_test_num_cols_status is True
                 and schema_train_col_status is True
                 and schema_test_col_status is True
+                and drift is False
             ):
-
                 logging.info("Dataset schema validation completed")
 
                 return True
