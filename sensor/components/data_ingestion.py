@@ -1,9 +1,10 @@
 import logging
 import sys
+
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sensor.cloud_storage.s3_operations import S3Operation
 
+from sensor.cloud_storage.s3_operations import S3Operation
 from sensor.exception import SensorException
 from sensor.utils.mongo_operations import MongoDBOperation
 from sensor.utils.read_params import read_params

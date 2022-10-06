@@ -3,10 +3,10 @@ import os
 import sys
 
 import numpy as np
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import RobustScaler
 from imblearn.combine import SMOTETomek
+from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler
 
 from sensor.components.data_ingestion import DataIngestion
 from sensor.exception import SensorException

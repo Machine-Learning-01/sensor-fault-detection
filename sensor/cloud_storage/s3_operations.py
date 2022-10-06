@@ -3,10 +3,10 @@ import os
 import pickle
 import sys
 from io import StringIO
-from pandas import read_csv
 
 import boto3
 from botocore.exceptions import ClientError
+from pandas import read_csv
 
 from sensor.exception import SensorException
 from sensor.utils.read_params import read_params
@@ -168,7 +168,7 @@ class S3Operation:
         try:
             content = self.read_object(object, make_readable=True)
 
-            df = read_csv(content,na_values='na')
+            df = read_csv(content, na_values="na")
 
             logger.info("Exited the get_df_from_object method of S3Operations class")
 
@@ -179,14 +179,14 @@ class S3Operation:
 
     def read_csv(self, fname, bucket):
         logger.info("Entered the read_csv method of S3Operations class")
-        
+
         try:
             csv_obj = self.get_file_object(fname, bucket)
 
             df = self.get_df_from_object(csv_obj)
 
             logger.info("Exited the read_csv method of S3Operations class")
-            
+
             return df
 
         except Exception as e:

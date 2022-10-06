@@ -2,7 +2,6 @@ import logging
 import sys
 
 from sensor.cloud_storage.s3_operations import S3Operation
-from sensor.components.tuner import ModelFinder
 from sensor.exception import SensorException
 from sensor.utils.main_utils import MainUtils
 from sensor.utils.read_params import read_params
@@ -41,8 +40,6 @@ class SensorModel:
 
 class ModelTrainer:
     def __init__(self):
-        self.tuner = ModelFinder()
-
         self.utils = MainUtils()
 
         self.s3 = S3Operation()
@@ -55,19 +52,52 @@ class ModelTrainer:
 
         self.preprocessor_obj_file_name = self.config["preprocessor_obj_file_name"]
 
-    def initiate_model_trainer(self, train_set, test_set):
+    def get_trained_models(self, X_data, Y_data):
 
-        logger.info("Entered initiate_model_trainer method of ModelTrainer class")
+        logger.info("Entered the get_trained_models method of ModelFinder class")
 
         try:
-            lst = self.tuner.get_trained_models(train_set, test_set)
+            models_list = list(self.config["train_model"].keys())
+
+            logger.info("Got model list from the config file")
+
+            x_train, y_train, x_test, y_test = (
+                X_data[:, :-1],
+                X_data[:, -1],
+                Y_data[:, :-1],
+                Y_data[:, -1],
+            )
+
+            tuned_model_list = [
+                (
+                    self.utils.get_tuned_model(
+                        model_name, x_train, y_train, x_test, y_test,
+                    )
+                )
+                for model_name in models_list
+            ]
+
+            logger.info("Got trained model list")
+
+            logger.info("Exited the get_trained_models method of ModelFinder class")
+
+            return tuned_model_list
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    def initiate_model_trainer(self, train_set, test_set):
+        logger.info("Entered initiate_model_trainer method of ModelTrainer class")
+
+        try:            
+            list_of_trained_models = self.get_trained_models(train_set,test_set)
 
             logger.info("Got a list of tuple of model score, model and model name")
 
             (
                 best_model,
                 best_model_score,
-            ) = self.utils.get_best_model_with_name_and_score(lst)
+            ) = self.utils.get_best_model_with_name_and_score(list_of_trained_models)
 
             logger.info("Got best model score, model and model name")
 
@@ -103,7 +133,7 @@ class ModelTrainer:
             else:
                 logger.info("No best model found with score more than base score")
 
-                raise "No best model found with score more than base score "
+                raise "No best model found with score more than base score"
 
         except Exception as e:
             raise SensorException(e, sys) from e
