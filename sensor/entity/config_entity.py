@@ -33,8 +33,6 @@ class DatabaseConfig:
 
         self.DB_URL = os.environ["MONGODB_URL"]
 
-        self.mongo_client = MongoClient(self.DB_URL)
-
     def get_database_config(self):
         return self.__dict__
 
