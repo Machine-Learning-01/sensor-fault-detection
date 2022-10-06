@@ -20,13 +20,13 @@ class ModelPusher:
             logging.info("Uploading artifacts folder to s3 bucket")
 
             self.s3.upload_file(
-                BEST_MODEL_PATH, BEST_MODEL_PATH, self.s3_config.IO_FILES_BUCKET
+                BEST_MODEL_PATH, BEST_MODEL_PATH, self.s3_config.IO_FILES_BUCKET,remove=False
             )
 
             self.s3.upload_file(
                 PREPROCESSOR_OBJ_FILE_NAME,
                 PREPROCESSOR_OBJ_FILE_NAME,
-                self.s3_config.IO_FILES_BUCKET,
+                self.s3_config.IO_FILES_BUCKET,remove=False
             )
 
             logging.info("Uploaded artifacts folder to s3 bucket")
