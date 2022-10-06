@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "Sensor-truck-tf-state"
+    bucket = "sensor-tf-state"
     key    = "tf_state"
     region = "us-east-1"
   }

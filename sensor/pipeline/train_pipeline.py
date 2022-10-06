@@ -1,27 +1,22 @@
-import logging
 import sys
+from typing import Tuple
+
+from pandas import DataFrame
 
 from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_transformation import DataTransformation
 from sensor.components.data_validation import DataValidation
 from sensor.components.model_trainer import ModelTrainer
 from sensor.exception import SensorException
-from sensor.utils.main_utils import MainUtils
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
+from sensor.logger import logging
 
 
 class TrainPipeline:
     def __init__(self):
-        self.config = read_params()
+        pass
 
-        self.utils = MainUtils()
-
-        self.artifacts_dir = self.config["artifacts_dir"]
-
-    def start_data_ingestion(self):
-        logger.info("Entered the start_data_ingestion method of TrainPipeline class")
+    def start_data_ingestion(self) -> Tuple[DataFrame, DataFrame]:
+        logging.info("Entered the start_data_ingestion method of TrainPipeline class")
 
         try:
             logging.info("Getting the data from mongodb")
@@ -42,17 +37,17 @@ class TrainPipeline:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def start_data_validation(train_set, test_set):
-        logger.info("Entered the start_data_validation method of TrainPipeline class")
+    def start_data_validation(train_set: DataFrame, test_set: DataFrame) -> bool:
+        logging.info("Entered the start_data_validation method of TrainPipeline class")
 
         try:
             data_validation = DataValidation(train_set, test_set)
 
             data_validation_status = data_validation.initiate_data_validation()
 
-            logger.info("Performed the data validation operation")
+            logging.info("Performed the data validation operation")
 
-            logger.info(
+            logging.info(
                 "Exited the start_data_validation method of TrainPipeline class"
             )
 
@@ -62,8 +57,10 @@ class TrainPipeline:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def start_data_transformation(train_set, test_set):
-        logger.info(
+    def start_data_transformation(
+        train_set: DataFrame, test_set: DataFrame
+    ) -> Tuple[DataFrame, DataFrame]:
+        logging.info(
             "Entered the start_data_transformation method of TrainPipeline class"
         )
 
@@ -74,7 +71,7 @@ class TrainPipeline:
                 train_set, test_set
             )
 
-            logger.info(
+            logging.info(
                 "Exited the start_data_transformation method of TrainPipeline class"
             )
 
@@ -85,36 +82,36 @@ class TrainPipeline:
 
     @staticmethod
     def start_model_pusher():
-        logger.info("Entered the start_model_pusher method of TrainPipeline class")
+        logging.info("Entered the start_model_pusher method of TrainPipeline class")
 
         try:
             model_trainer = ModelTrainer()
 
             model_trainer.initiate_model_pusher()
 
-            logger.info("Initiated the model pusher")
+            logging.info("Initiated the model pusher")
 
-            logger.info("Exited the start_model_pusher method of TrainPipeline class")
+            logging.info("Exited the start_model_pusher method of TrainPipeline class")
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def start_model_trainer(train_set, test_set):
-        logger.info("Entered the start_model_trainer method of TrainPipeline class")
+    def start_model_trainer(train_set: DataFrame, test_set: DataFrame) -> None:
+        logging.info("Entered the start_model_trainer method of TrainPipeline class")
 
         try:
             model_trainer = ModelTrainer()
 
             model_trainer.initiate_model_trainer(train_set, test_set)
 
-            logger.info("Exited the start_model_trainer method of TrainPipeline class")
+            logging.info("Exited the start_model_trainer method of TrainPipeline class")
 
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def run_pipeline(self):
-        logger.info("Entered the run_pipeline method of TrainPipeline class")
+    def run_pipeline(self) -> None:
+        logging.info("Entered the run_pipeline method of TrainPipeline class")
 
         try:
             train_set, test_set = self.start_data_ingestion()
@@ -128,7 +125,7 @@ class TrainPipeline:
 
                 self.start_model_pusher()
 
-            logger.info("Exited the run_pipeline method of TrainPipeline class")
+            logging.info("Exited the run_pipeline method of TrainPipeline class")
 
         except Exception as e:
             raise SensorException(e, sys) from e

@@ -1,56 +1,53 @@
-import logging
-import os
 import sys
+from typing import Union
 
 import numpy as np
 from imblearn.combine import SMOTETomek
+<<<<<<< HEAD
+=======
+from pandas import DataFrame
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
 from sensor.components.data_ingestion import DataIngestion
+from sensor.constant import TARGET_COLUMN
+from sensor.entity.config_entity import SimpleImputerConfig
 from sensor.exception import SensorException
+from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
 
 
 class DataTransformation:
     def __init__(self):
-        self.schema_file = read_params("sensor/config/schema.yaml")
-
         self.data_ingestion = DataIngestion()
+
+        self.imputer_config = SimpleImputerConfig()
 
         self.utils = MainUtils()
 
-        self.config = read_params()
-
-        self.artifacts_dir = self.config["artifacts_dir"]
-
-        os.makedirs(self.artifacts_dir, exist_ok=True)
-
-    def get_data_transformer_object(self):
-        logger.info(
+    def get_data_transformer_object(self) -> object:
+        logging.info(
             "Entered get_data_transformer_object method of DataTransformation class"
         )
 
         try:
-            logger.info("Got numerical cols from schema config")
+            logging.info("Got numerical cols from schema config")
 
             robust_scaler = RobustScaler()
 
-            imputer = SimpleImputer(strategy="constant", fill_value=0)
+            imputer = SimpleImputer(self.imputer_config.__dict__)
 
-            logger.info("Initialized RobustScaler, SimpleImputer")
+            logging.info("Initialized RobustScaler, SimpleImputer")
 
             preprocessor = Pipeline(
                 steps=[("Imputer", imputer), ("RobustScaler", robust_scaler)]
             )
 
-            logger.info("Created preprocessor object from ColumnTransformer")
+            logging.info("Created preprocessor object from ColumnTransformer")
 
-            logger.info(
+            logging.info(
                 "Exited get_data_transformer_object method of DataTransformation class"
             )
 
@@ -59,57 +56,53 @@ class DataTransformation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def initiate_data_transformation(self, train_set, test_set):
-        logger.info(
+    def initiate_data_transformation(
+        self, train_set: DataFrame, test_set: DataFrame
+    ) -> Union[np.ndarray, np.array]:
+        logging.info(
             "Entered initiate_data_transformation method of Data_Transformation class"
         )
 
         try:
             preprocessor = self.get_data_transformer_object()
 
-            logger.info("Got the preprocessor object")
+            logging.info("Got the preprocessor object")
 
-            target_column_name = self.schema_file["target_column"]
+            input_feature_train_df = train_set.drop(columns=[TARGET_COLUMN], axis=1)
 
-            logger.info("Got target column name and numerical columns from schema file")
-
-            input_feature_train_df = train_set.drop(
-                columns=[target_column_name], axis=1
-            )
-
-            target_feature_train_df = train_set[target_column_name]
+            target_feature_train_df = train_set[TARGET_COLUMN]
 
             target_feature_train_df = target_feature_train_df.replace(
                 {"pos": 1, "neg": 0}
             )
 
-            logger.info("Got train features and test features of Training dataset")
+            logging.info("Got train features and test features of Training dataset")
 
-            input_feature_test_df = test_set.drop(columns=[target_column_name], axis=1)
+            input_feature_test_df = test_set.drop(columns=[TARGET_COLUMN], axis=1)
 
-            target_feature_test_df = test_set[target_column_name]
+            target_feature_test_df = test_set[TARGET_COLUMN]
 
             target_feature_test_df = target_feature_test_df.replace(
                 {"pos": 1, "neg": 0}
             )
 
-            logger.info("Got train features and test features of Testing dataset")
+            logging.info("Got train features and test features of Testing dataset")
 
-            logger.info(
+            logging.info(
                 "Applying preprocessing object on training dataframe and testing dataframe"
             )
 
             input_feature_train_arr = preprocessor.fit_transform(input_feature_train_df)
 
-            logger.info(
+            logging.info(
                 "Used the preprocessor object to fit transform the train features"
             )
 
             input_feature_test_arr = preprocessor.transform(input_feature_test_df)
 
-            logger.info("Used the preprocessor object to transform the test features")
+            logging.info("Used the preprocessor object to transform the test features")
 
-            logger.info("Applying SMOTETomek on Training dataset")
+            logging.info("Applying SMOTETomek on Training dataset")
 
             smt = SMOTETomek(sampling_strategy="minority")
 
@@ -117,17 +110,17 @@ class DataTransformation:
                 input_feature_train_arr, target_feature_train_df
             )
 
-            logger.info("Applied SMOTETomek on trainng dataset")
+            logging.info("Applied SMOTETomek on trainng dataset")
 
-            logger.info("Applying SMOTETomek on Testing dataset")
+            logging.info("Applying SMOTETomek on Testing dataset")
 
             input_feature_test_final, target_feature_test_final = smt.fit_resample(
                 input_feature_test_arr, target_feature_test_df
             )
 
-            logger.info("Applied SMOTETomek on testing dataset")
+            logging.info("Applied SMOTETomek on testing dataset")
 
-            logger.info("Created train array and test array")
+            logging.info("Created train array and test array")
 
             train_arr = np.c_[
                 input_feature_train_final, np.array(target_feature_train_final)
@@ -143,9 +136,9 @@ class DataTransformation:
 
             self.utils.save_object(preprocessor_obj_file_name, preprocessor)
 
-            logger.info("Saved the preprocessor object")
+            logging.info("Saved the preprocessor object")
 
-            logger.info(
+            logging.info(
                 "Exited initiate_data_transformation method of Data_Transformation class"
             )
 

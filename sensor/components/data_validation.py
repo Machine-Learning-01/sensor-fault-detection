@@ -1,44 +1,69 @@
 import json
-import logging
 import sys
 
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 
 from sensor.exception import SensorException
-from sensor.utils.data_validation_utils import *
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
+from sensor.logger import logging
+from sensor.utils.main_utils import MainUtils
 
 
 class DataValidation:
     def __init__(self, train_set, test_set):
-        self.schema_config = read_params("sensor/config/schema.yaml")
-
         self.train_set = train_set
 
         self.test_set = test_set
 
         self.validation_status = False
 
+        self.utils = MainUtils()
+
+        self._schema_config = self.utils.read_schema_config_file()
+
+    def validate_schema_columns(self, df):
+        try:
+            if len(df.columns) == len(self._schema_config["columns"]):
+                validation_status = True
+
+            else:
+                validation_status = False
+
+            return validation_status
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    def validate_schema_for_numerical_datatype(self, df):
+        try:
+            for column in self._schema_config["numerical_columns"]:
+                if column in df.columns:
+                    validation_status = True
+                else:
+                    validation_status = False
+
+            return validation_status
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
     def validate_dataset_schema_columns(self):
-        logger.info(
+        logging.info(
             "Entered validate_dataset_schema_columns method of Data_Validation class"
         )
 
         try:
-            logger.info("Validating dataset schema columns")
+            logging.info("Validating dataset schema columns")
 
-            train_schema_status = validate_schema_columns(self.train_set)
+            train_schema_status = self.validate_schema_columns(self.train_set)
 
-            logger.info("Validated dataset schema columns on the train set")
+            logging.info("Validated dataset schema columns on the train set")
 
-            test_schema_status = validate_schema_columns(self.test_set)
+            test_schema_status = self.validate_schema_columns(self.test_set)
 
-            logger.info("Validated dataset schema columns on the test set")
+            logging.info("Validated dataset schema columns on the test set")
 
-            logger.info("Validated dataset schema columns")
+            logging.info("Validated dataset schema columns")
 
             return train_schema_status, test_schema_status
 
@@ -46,26 +71,28 @@ class DataValidation:
             raise SensorException(e, sys) from e
 
     def validate_dataset_schema_for_numerical_datatype(self):
-        logger.info(
+        logging.info(
             "Entered validate_dataset_schema_for_numerical_datatype method of Data_Validation class"
         )
 
         try:
-            logger.info("Validating dataset schema for numerical datatype")
+            logging.info("Validating dataset schema for numerical datatype")
 
-            train_num_datatype_status = validate_schema_for_numerical_datatype(
+            train_num_datatype_status = self.validate_schema_for_numerical_datatype(
                 self.train_set
             )
 
-            logger.info("Validated dataset schema for numerical datatype for train set")
+            logging.info(
+                "Validated dataset schema for numerical datatype for train set"
+            )
 
-            test_num_datatype_status = validate_schema_for_numerical_datatype(
+            test_num_datatype_status = self.validate_schema_for_numerical_datatype(
                 self.test_set
             )
 
-            logger.info("Validated dataset schema for numerical datatype for test set")
+            logging.info("Validated dataset schema for numerical datatype for test set")
 
-            logger.info(
+            logging.info(
                 "Exited validate_dataset_schema_for_numerical_datatype method of Data_Validation class"
             )
 
@@ -101,32 +128,32 @@ class DataValidation:
             raise SensorException(e, sys) from e
 
     def initiate_data_validation(self):
-        logger.info("Entered initiate_data_validation method of Data_Validation class")
+        logging.info("Entered initiate_data_validation method of Data_Validation class")
 
         try:
-            logger.info("Initiated data validation for the dataset")
+            logging.info("Initiated data validation for the dataset")
 
             (
                 schema_train_col_status,
                 schema_test_col_status,
             ) = self.validate_dataset_schema_columns()
 
-            logger.info(
+            logging.info(
                 f"Schema train cols status is {schema_train_col_status} and schema test cols status is {schema_test_col_status}"
             )
 
-            logger.info("Validated dataset schema columns")
+            logging.info("Validated dataset schema columns")
 
             (
                 schema_train_num_cols_status,
                 schema_test_num_cols_status,
             ) = self.validate_dataset_schema_for_numerical_datatype()
 
-            logger.info(
+            logging.info(
                 f"Schema train numerical cols status is {schema_train_num_cols_status} and schema test numerical cols status is {schema_test_num_cols_status}"
             )
 
-            logger.info("Validated dataset schema for numerical datatype")
+            logging.info("Validated dataset schema for numerical datatype")
 
             if (
                 schema_train_num_cols_status is True
@@ -135,7 +162,7 @@ class DataValidation:
                 and schema_test_col_status is True
             ):
 
-                logger.info("Dataset schema validation completed")
+                logging.info("Dataset schema validation completed")
 
                 return True
 

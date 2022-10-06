@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import logging
 import sys
 
@@ -7,39 +8,61 @@ from sensor.cloud_storage.s3_operations import S3Operation
 from sensor.components.data_ingestion import DataIngestion
 from sensor.exception import SensorException
 from sensor.utils.read_params import read_params
+=======
+import sys
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
-logger = logging.getLogger(__name__)
+from pandas import DataFrame
+
+from sensor.cloud_storage.s3_operations import S3Operation
+from sensor.components.data_ingestion import DataIngestion
+from sensor.exception import SensorException
+from sensor.logger import logging
+from sensor.utils.main_utils import MainUtils
 
 
 class SensorData:
     def __init__(self):
         self.data_ingestion = DataIngestion()
 
-        self.config = read_params()
+        self.utils = MainUtils()
 
-        self.schema_config = read_params("sensor/config/schema.yaml")
+        self.schema_config = self.utils.read_schema_config_file()
 
+<<<<<<< HEAD
         self.pred_data_csv_file = self.config["pred_data_csv_file"]
+=======
+        # self.pred_data_csv_file = self.config["pred_data_csv_file"]
 
-        self.pred_data_bucket = self.config["s3_bucket"]["sensor_pred_bucket"]
+        # self.pred_data_bucket = self.config["s3_bucket"]["sensor_pred_bucket"]
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
-        self.drop_columns = self.schema_config["drop_columns"]
+        # self.drop_columns = self.schema_config["drop_columns"]
 
         self.s3 = S3Operation()
 
     def get_data(self):
-        logger.info("Entered get_data method of SensorData class")
+        logging.info("Entered get_data method of SensorData class")
         try:
             pred_df = self.s3.read_csv(self.pred_data_csv_file, self.pred_data_bucket)
 
+<<<<<<< HEAD
             logger.info("Read prediction csv file from s3 bucket")
+=======
+            logging.info("Read prediction csv file from s3 bucket")
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
             pred_df = pred_df.drop(self.drop_columns, axis=1)
 
-            logger.info("Dropped the required columns")
+            logging.info("Dropped the required columns")
 
+            logging.info("Exited the get_data method of SensorData class")
+
+<<<<<<< HEAD
             logger.info("Exited the get_data method of SensorData class")
 
+=======
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
             return pred_df
 
         except Exception as e:
@@ -49,8 +72,6 @@ class SensorData:
 class SensorClassifier:
     def __init__(self):
         self.s3 = S3Operation()
-
-        self.config = read_params()
 
         self.model_file = self.config["model_file_name"]
 

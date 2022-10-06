@@ -1,5 +1,5 @@
-variable "car_price_ecr_name" {
-  default = "Sensor-truck"
+variable "sensor_ecr_name" {
+  default = "sensor"
   type    = string
 }
 

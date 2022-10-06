@@ -1,12 +1,13 @@
-import logging
 import sys
 
 from sensor.cloud_storage.s3_operations import S3Operation
+<<<<<<< HEAD
+=======
+from sensor.constant import BEST_MODEL_PATH
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sensor.exception import SensorException
+from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
 
 
 class SensorModel:
@@ -17,14 +18,14 @@ class SensorModel:
         self.trained_model_object = trained_model_object
 
     def predict(self, X):
-        logger.info("Entered predict method of SensorTruckModel class")
+        logging.info("Entered predict method of SensorTruckModel class")
 
         try:
-            logger.info("Using the trained model to get predictions")
+            logging.info("Using the trained model to get predictions")
 
             transformed_feature = self.preprocessing_object.transform(X)
 
-            logger.info("Used the trained model to get predictions")
+            logging.info("Used the trained model to get predictions")
 
             return self.trained_model_object.predict(transformed_feature)
 
@@ -44,8 +45,6 @@ class ModelTrainer:
 
         self.s3 = S3Operation()
 
-        self.config = read_params()
-
         self.artifacts_dir = self.config["artifacts_dir"]
 
         self.io_files_bucket = self.config["s3_bucket"]["sensor_input_files_bucket"]
@@ -54,6 +53,7 @@ class ModelTrainer:
 
     def get_trained_models(self, X_data, Y_data):
 
+<<<<<<< HEAD
         logger.info("Entered the get_trained_models method of ModelFinder class")
 
         try:
@@ -91,19 +91,60 @@ class ModelTrainer:
 
         try:            
             list_of_trained_models = self.get_trained_models(train_set,test_set)
+=======
+        logging.info("Entered the get_trained_models method of ModelFinder class")
 
-            logger.info("Got a list of tuple of model score, model and model name")
+        try:
+            models_list = list(self.config["train_model"].keys())
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
+
+            logging.info("Got model list from the config file")
+
+            x_train, y_train, x_test, y_test = (
+                X_data[:, :-1],
+                X_data[:, -1],
+                Y_data[:, :-1],
+                Y_data[:, -1],
+            )
+
+            tuned_model_list = [
+                (
+                    self.utils.get_tuned_model(
+                        model_name, x_train, y_train, x_test, y_test,
+                    )
+                )
+                for model_name in models_list
+            ]
+
+            logging.info("Got trained model list")
+
+            logging.info("Exited the get_trained_models method of ModelFinder class")
+            return tuned_model_list
+
+        except Exception as e:
+            raise SensorException(e, sys) from e
+
+    def initiate_model_trainer(self, train_set, test_set):
+
+        logging.info("Entered initiate_model_trainer method of ModelTrainer class")
+
+        try:
+            lst = self.get_trained_models(train_set, test_set)
+
+            logging.info("Got a list of tuple of model score, model and model name")
 
             (
                 best_model,
                 best_model_score,
             ) = self.utils.get_best_model_with_name_and_score(list_of_trained_models)
 
-            logger.info("Got best model score, model and model name")
+            logging.info("Got best model score, model and model name")
 
             preprocessing_obj = self.utils.load_object(self.preprocessor_obj_file_name)
 
-            logger.info("Loaded preprocessing object")
+            _model_config = ""
+
+            logging.info("Loaded preprocessing object")
 
             base_model_score = float(self.config["base_model_score"])
 
@@ -111,27 +152,22 @@ class ModelTrainer:
 
                 self.utils.update_model_score(best_model_score)
 
-                logger.info("Updating model score in yaml file")
+                logging.info("Updating model score in yaml file")
 
-                sensor_model = SensorModel(
-                    preprocessing_object=preprocessing_obj,
-                    trained_model_object=best_model,
-                )
+                sensor_model = SensorModel(preprocessing_obj, best_model)
 
-                logger.info(
+                logging.info(
                     "Created Sensor truck model object with preprocessor and model"
                 )
 
-                best_model_file_path = self.artifacts_dir + "/" + "model" + ".sav"
+                logging.info("Created best model file path.")
 
-                logger.info("Created best model file path.")
+                self.utils.save_object(BEST_MODEL_PATH, sensor_model)
 
-                self.utils.save_object(best_model_file_path, sensor_model)
-
-                logger.info("Saved the best model object in artifacts directory.")
+                logging.info("Saved the best model object in artifacts directory.")
 
             else:
-                logger.info("No best model found with score more than base score")
+                logging.info("No best model found with score more than base score")
 
                 raise "No best model found with score more than base score"
 
@@ -139,16 +175,16 @@ class ModelTrainer:
             raise SensorException(e, sys) from e
 
     def initiate_model_pusher(self):
-        logger.info("Entered initiate_model_pusher method of ModelTrainer class")
+        logging.info("Entered initiate_model_pusher method of ModelTrainer class")
 
         try:
-            logger.info("Uploading artifacts folder to s3 bucket")
+            logging.info("Uploading artifacts folder to s3 bucket")
 
             self.s3.upload_folder(self.artifacts_dir, self.io_files_bucket)
 
-            logger.info("Uploaded artifacts folder to s3 bucket")
+            logging.info("Uploaded artifacts folder to s3 bucket")
 
-            logger.info("Exited initiate_model_pusher method of ModelTrainer class")
+            logging.info("Exited initiate_model_pusher method of ModelTrainer class")
 
         except Exception as e:
             raise SensorException(e, sys) from e

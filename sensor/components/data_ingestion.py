@@ -1,43 +1,53 @@
-import logging
 import sys
+<<<<<<< HEAD
+=======
+from typing import Tuple
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 
 import numpy as np
+from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
+<<<<<<< HEAD
 from sensor.cloud_storage.s3_operations import S3Operation
+=======
+from sensor.configuration.config import MongoDBOperation
+from sensor.constant import TRAIN_TEST_SPLIT_SIZE
+from sensor.entity.config_entity import DatabaseConfig
+>>>>>>> 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db
 from sensor.exception import SensorException
-from sensor.utils.mongo_operations import MongoDBOperation
-from sensor.utils.read_params import read_params
-
-logger = logging.getLogger(__name__)
-
-mongo_op = MongoDBOperation()
+from sensor.logger import logging
+from sensor.utils.main_utils import MainUtils
 
 
 class DataIngestion:
     def __init__(self):
-        self.config = read_params()
+        self.utils = MainUtils()
 
-        self.s3 = S3Operation()
+        self.mongo_op = MongoDBOperation()
 
-        self.schema_config = read_params("sensor/config/schema.yaml")
-
-        self.db_name = self.config["mongo"]["db_name"]
-
-        self.collection_name = self.config["mongo"]["collection_name"]
-
-        self.drop_cols = self.schema_config["drop_columns"]
+        self.mongo_config = DatabaseConfig()
 
     @staticmethod
-    def split_data_as_train_test(df):
-        logger.info("Entered split_data_as_train_test method of Data_Ingestion class")
+    def split_data_as_train_test(df: DataFrame) -> Tuple(DataFrame, DataFrame):
+        """
+        Method Name :   split_data_as_train_test
+        Description :   This method splits the dataframe into train set and test set based on split ratio 
+        
+        Output      :   Folder is created in s3 bucket
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        logging.info("Entered split_data_as_train_test method of Data_Ingestion class")
 
         try:
-            train_set, test_set = train_test_split(df, test_size=0.2)
+            train_set, test_set = train_test_split(df, test_size=TRAIN_TEST_SPLIT_SIZE)
 
-            logger.info("Performed train test split on the dataframe")
+            logging.info("Performed train test split on the dataframe")
 
-            logger.info(
+            logging.info(
                 "Exited split_data_as_train_test method of Data_Ingestion class"
             )
 
@@ -46,21 +56,31 @@ class DataIngestion:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_data_from_mongodb(self):
-        logger.info("Entered get_data_from_mongodb method of Data_Ingestion class")
+    def get_data_from_mongodb(self) -> DataFrame:
+        """
+        Method Name :   split_data_as_train_test
+        Description :   This method splits the dataframe into train set and test set based on split ratio 
+        
+        Output      :   Folder is created in s3 bucket
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        logging.info("Entered get_data_from_mongodb method of Data_Ingestion class")
 
         try:
-            logger.info("Getting the dataframe from mongodb")
+            logging.info("Getting the dataframe from mongodb")
 
-            df = mongo_op.get_collection_as_dataframe(
-                self.db_name, self.collection_name
+            df = self.mongo_op.get_collection_as_dataframe(
+                self.mongo_config.database_name, self.mongo_config.collection_name
             )
 
             df = df.replace("na", np.nan)
 
-            logger.info("Got the dataframe from mongodb")
+            logging.info("Got the dataframe from mongodb")
 
-            logger.info(
+            logging.info(
                 "Exited the get_data_from_mongodb method of Data_Ingestion class"
             )
 
@@ -69,21 +89,25 @@ class DataIngestion:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def initiate_data_ingestion(self):
-        logger.info("Entered initiate_data_ingestion method of Data_Ingestion class")
+    def initiate_data_ingestion(self) -> Tuple[DataFrame, DataFrame]:
+        logging.info("Entered initiate_data_ingestion method of Data_Ingestion class")
 
         try:
             df = self.get_data_from_mongodb()
 
-            df1 = df.drop(self.drop_cols, axis=1)
+            _schema_config = self.utils.read_schema_config_file()
 
-            logger.info("Got the data from mongodb")
+            df1 = df.drop(_schema_config["drop_columns"], axis=1)
+
+            logging.info("Got the data from mongodb")
 
             train_set, test_set = self.split_data_as_train_test(df1)
 
-            logger.info("Performed train test split on the dataset")
+            logging.info("Performed train test split on the dataset")
 
-            logger.info("Exited initiate_data_ingestion method of Data_Ingestion class")
+            logging.info(
+                "Exited initiate_data_ingestion method of Data_Ingestion class"
+            )
 
             return train_set, test_set
 
