@@ -4,6 +4,7 @@ from fastapi.responses import Response
 from uvicorn import run as app_run
 
 from sensor.components.model_predictor import SensorClassifier
+from sensor.constant import APP_HOST, APP_PORT
 from sensor.pipeline.train_pipeline import TrainPipeline
 
 app = FastAPI()
@@ -48,4 +49,4 @@ async def predictRouteClient():
 
 
 if __name__ == "__main__":
-    app_run(app, host="0.0.0.0", port=8080)
+    app_run(app, host=APP_HOST, port=APP_PORT)

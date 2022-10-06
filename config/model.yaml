@@ -1,18 +1,22 @@
 train_model:
   XGBClassifier:
     booster:
-      - gbtree
-      - dart
+    - gbtree
+    - dart
     max_depth:
-      - 3
-      - 4
-      - 6
+    - 3
+    - 4
+    - 6
   GradientBoostingClassifier:
     loss:
-      - deviance
+    - deviance
     n_estimators:
-      - 100
-      - 200
+    - 100
+    - 200
     criterion:
-      - friedman_mse
-      - squared_error
+    - friedman_mse
+    - squared_error
+
+
+
+base_model_score: '0.6'

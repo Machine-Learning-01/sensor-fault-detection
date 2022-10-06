@@ -337,8 +337,3 @@ drop_columns:
   - cr_000
   - bo_000
   - bn_000
-
-:sensor/config/schema.yaml
-target_column: class
-
- 04af0a7d267aa1f662cd5855e3b5b2c11d6fe4db:config/schema.yaml

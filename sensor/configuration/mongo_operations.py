@@ -1,28 +1,30 @@
 import sys
 from json import loads
-from os import environ
 
-import pandas as pd
+from pandas import DataFrame
 from pymongo import MongoClient
+from pymongo.collection import Collection
+from pymongo.database import Database
 
+from sensor.entity.config_entity import DatabaseConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
 
 
 class MongoDBOperation:
     def __init__(self):
-        self.DB_URL = environ["MONGODB_URL"]
+        self.mongo_config = DatabaseConfig()
 
-        self.client = MongoClient(self.DB_URL)
+        self.client = MongoClient(self.mongo_config.DB_URL)
 
-    def get_database(self, db_name):
+    def get_database(self, database_name: str) -> Database:
 
         logging.info("Entered get_database method of MongoDB_Operation class")
 
         try:
-            db = self.client[db_name]
+            db = self.client[database_name]
 
-            logging.info(f"Created {db_name} database in MongoDB")
+            logging.info(f"Created {database_name} database in MongoDB")
 
             logging.info("Exited get_database method MongoDB_Operation class")
 
@@ -32,7 +34,7 @@ class MongoDBOperation:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def get_collection(database, collection_name):
+    def get_collection(database: Database, collection_name: str) -> Collection:
 
         logging.info("Entered get_collection method of MongoDB_Operation class")
 
@@ -48,18 +50,25 @@ class MongoDBOperation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_collection_as_dataframe(self, db_name, collection_name):
-
+    def get_collection_as_dataframe(
+        self, database_name: str, collection_name: str
+    ) -> DataFrame:
         logging.info(
             "Entered get_collection_as_dataframe method of MongoDB_Operation class"
         )
 
         try:
-            database = self.get_database(db_name)
+            database = self.get_database(database_name)
+
+            logging.info("Getting collection from database")
 
             collection = database.get_collection(name=collection_name)
 
-            df = pd.DataFrame(list(collection.find()))
+            logging.info("Got a collection from database")
+
+            df = DataFrame(list(collection.find()))
+
+            logging.info("Created a dataframe from the collection")
 
             if "_id" in df.columns.to_list():
                 df = df.drop(columns=["_id"], axis=1)
@@ -75,7 +84,9 @@ class MongoDBOperation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def insert_dataframe_as_record(self, data_frame, db_name, collection_name):
+    def insert_dataframe_as_record(
+        self, data_frame: DataFrame, database_name: str, collection_name: str
+    ) -> None:
 
         logging.info("Entered insert_dataframe_as_record method of MongoDB_Operation")
 
@@ -84,7 +95,7 @@ class MongoDBOperation:
 
             logging.info(f"Converted dataframe to json records")
 
-            database = self.get_database(db_name)
+            database = self.get_database(database_name)
 
             collection = database.get_collection(collection_name)
 

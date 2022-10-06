@@ -6,6 +6,7 @@ from pandas import DataFrame
 from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_transformation import DataTransformation
 from sensor.components.data_validation import DataValidation
+from sensor.components.model_pusher import ModelPusher
 from sensor.components.model_trainer import ModelTrainer
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -85,9 +86,9 @@ class TrainPipeline:
         logging.info("Entered the start_model_pusher method of TrainPipeline class")
 
         try:
-            model_trainer = ModelTrainer()
+            model_pusher = ModelPusher()
 
-            model_trainer.initiate_model_pusher()
+            model_pusher.initiate_model_pusher()
 
             logging.info("Initiated the model pusher")
 

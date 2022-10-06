@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
 from sensor.components.data_ingestion import DataIngestion
-from sensor.constant import TARGET_COLUMN
+from sensor.constant import PREPROCESSOR_OBJ_FILE_NAME, TARGET_COLUMN
 from sensor.entity.config_entity import SimpleImputerConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -25,6 +25,16 @@ class DataTransformation:
         self.utils = MainUtils()
 
     def get_data_transformer_object(self) -> object:
+        """
+        Method Name :   get_data_transformer_object
+        Description :   This method creates and returns a data transformer object 
+        
+        Output      :   data transformer object is created and returned 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info(
             "Entered get_data_transformer_object method of DataTransformation class"
         )
@@ -34,7 +44,7 @@ class DataTransformation:
 
             robust_scaler = RobustScaler()
 
-            imputer = SimpleImputer(self.imputer_config.__dict__)
+            imputer = SimpleImputer(**self.imputer_config.__dict__)
 
             logging.info("Initialized RobustScaler, SimpleImputer")
 
@@ -55,7 +65,17 @@ class DataTransformation:
 
     def initiate_data_transformation(
         self, train_set: DataFrame, test_set: DataFrame
-    ) -> Union[np.ndarray, np.array]:
+    ) -> Union[np.ndarray, np.ndarray]:
+        """
+        Method Name :   initiate_data_transformation
+        Description :   This method initiates the data transformation component for the pipeline 
+        
+        Output      :   data transformer object is created and returned 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info(
             "Entered initiate_data_transformation method of Data_Transformation class"
         )
@@ -107,9 +127,9 @@ class DataTransformation:
                 input_feature_train_arr, target_feature_train_df
             )
 
-            logging.info("Applied SMOTETomek on trainng dataset")
+            logging.info("Applied SMOTETomek on training dataset")
 
-            logging.info("Applying SMOTETomek on Testing dataset")
+            logging.info("Applying SMOTETomek on testing dataset")
 
             input_feature_test_final, target_feature_test_final = smt.fit_resample(
                 input_feature_test_arr, target_feature_test_df
@@ -127,11 +147,7 @@ class DataTransformation:
                 input_feature_test_final, np.array(target_feature_test_final)
             ]
 
-            preprocessor_obj_file_name = (
-                self.artifacts_dir + "/" + "sensor_preprocessor" + ".pkl"
-            )
-
-            self.utils.save_object(preprocessor_obj_file_name, preprocessor)
+            self.utils.save_object(PREPROCESSOR_OBJ_FILE_NAME, preprocessor)
 
             logging.info("Saved the preprocessor object")
 

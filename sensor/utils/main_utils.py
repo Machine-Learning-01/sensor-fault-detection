@@ -29,7 +29,7 @@ class MainUtils:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def read_schema_config_file(self):
+    def read_schema_config_file(self) -> dict:
         try:
             schema_config = self.read_yaml_file(SCHEMA_CONFIG_FILE)
 
@@ -38,11 +38,11 @@ class MainUtils:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def read_model_config_file(self):
+    def read_model_config_file(self) -> dict:
         try:
-            schema_config = self.read_yaml_file(MODEL_CONFIG_FILE)
+            model_config = self.read_yaml_file(MODEL_CONFIG_FILE)
 
-            return schema_config
+            return model_config
 
         except Exception as e:
             raise SensorException(e, sys) from e
@@ -122,12 +122,12 @@ class MainUtils:
         try:
             model_name = model.__class__.__name__
 
-            model_config = self.read_yaml_file()
+            model_config = self.read_model_config_file()
 
             model_param_grid = model_config["train_model"][model_name]
 
             model_grid = GridSearchCV(
-                model, model_param_grid, self.tuner_config.__dict__
+                model, model_param_grid, **self.tuner_config.__dict__
             )
 
             model_grid.fit(x_train, y_train)

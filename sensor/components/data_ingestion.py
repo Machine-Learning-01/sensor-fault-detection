@@ -5,7 +5,7 @@ import numpy as np
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
-from sensor.configuration.config import MongoDBOperation
+from sensor.configuration.mongo_operations import MongoDBOperation
 from sensor.constant import TRAIN_TEST_SPLIT_SIZE
 from sensor.entity.config_entity import DatabaseConfig
 from sensor.exception import SensorException
@@ -22,7 +22,7 @@ class DataIngestion:
         self.mongo_config = DatabaseConfig()
 
     @staticmethod
-    def split_data_as_train_test(df: DataFrame) -> Tuple(DataFrame, DataFrame):
+    def split_data_as_train_test(df: DataFrame) -> Tuple[DataFrame, DataFrame]:
         """
         Method Name :   split_data_as_train_test
         Description :   This method splits the dataframe into train set and test set based on split ratio 
@@ -66,7 +66,7 @@ class DataIngestion:
             logging.info("Getting the dataframe from mongodb")
 
             df = self.mongo_op.get_collection_as_dataframe(
-                self.mongo_config.database_name, self.mongo_config.collection_name
+                self.mongo_config.DATABASE_NAME, self.mongo_config.COLLECTION_NAME
             )
 
             df = df.replace("na", np.nan)
@@ -83,6 +83,16 @@ class DataIngestion:
             raise SensorException(e, sys) from e
 
     def initiate_data_ingestion(self) -> Tuple[DataFrame, DataFrame]:
+        """
+        Method Name :   initiate_data_ingestion
+        Description :   This method initiates the data ingestion components of training pipeline 
+        
+        Output      :   train set and test set are returned as the artifacts of data ingestion components
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info("Entered initiate_data_ingestion method of Data_Ingestion class")
 
         try:

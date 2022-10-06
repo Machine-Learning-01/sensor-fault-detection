@@ -1,8 +1,10 @@
 import json
 import sys
+from typing import Tuple, Union
 
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
+from pandas import DataFrame
 
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -10,7 +12,7 @@ from sensor.utils.main_utils import MainUtils
 
 
 class DataValidation:
-    def __init__(self, train_set, test_set):
+    def __init__(self, train_set: DataFrame, test_set: DataFrame):
         self.train_set = train_set
 
         self.test_set = test_set
@@ -21,7 +23,17 @@ class DataValidation:
 
         self._schema_config = self.utils.read_schema_config_file()
 
-    def validate_schema_columns(self, df):
+    def validate_schema_columns(self, df: DataFrame) -> bool:
+        """
+        Method Name :   validate_schema_columns
+        Description :   This method validates the schema columns for the particular dataframe 
+        
+        Output      :   True or False value is returned based on the schema 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         try:
             if len(df.columns) == len(self._schema_config["columns"]):
                 validation_status = True
@@ -34,7 +46,17 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def validate_schema_for_numerical_datatype(self, df):
+    def validate_schema_for_numerical_datatype(self, df: DataFrame) -> bool:
+        """
+        Method Name :   validate_schema_for_numerical_datatype
+        Description :   This method validates the schema for numerical datatype 
+        
+        Output      :   True or False value is returned based on the schema 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         try:
             for column in self._schema_config["numerical_columns"]:
                 if column in df.columns:
@@ -47,7 +69,17 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def validate_dataset_schema_columns(self):
+    def validate_dataset_schema_columns(self) -> Tuple[bool, bool]:
+        """
+        Method Name :   validate_dataset_schema_columns
+        Description :   This method validates the schema for schema columns for both train and test set 
+        
+        Output      :   True or False value is returned based on the schema 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info(
             "Entered validate_dataset_schema_columns method of Data_Validation class"
         )
@@ -70,7 +102,17 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def validate_dataset_schema_for_numerical_datatype(self):
+    def validate_dataset_schema_for_numerical_datatype(self) -> Tuple[bool, bool]:
+        """
+        Method Name :   validate_dataset_schema_for_numerical_datatype
+        Description :   This method validates the schema for numerical datatype for both train and test set 
+        
+        Output      :   True or False value is returned based on the schema 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info(
             "Entered validate_dataset_schema_for_numerical_datatype method of Data_Validation class"
         )
@@ -102,7 +144,19 @@ class DataValidation:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def detect_dataset_drift(reference, production, get_ratio=False):
+    def detect_dataset_drift(
+        reference: DataFrame, production: DataFrame, get_ratio: bool = False
+    ) -> Union[bool, float]:
+        """
+        Method Name :   detect_dataset_drift
+        Description :   This method detects the dataset drift using the reference and production dataframe 
+        
+        Output      :   Returns bool or float value based on the get_ration parameter
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         try:
             data_drift_profile = Profile(sections=[DataDriftProfileSection()])
 
@@ -127,7 +181,17 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def initiate_data_validation(self):
+    def initiate_data_validation(self) -> bool:
+        """
+        Method Name :   initiate_data_validation
+        Description :   This method initiates the data validation component for the pipeline
+        
+        Output      :   Returns bool value based on validation results
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         logging.info("Entered initiate_data_validation method of Data_Validation class")
 
         try:

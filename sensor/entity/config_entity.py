@@ -1,3 +1,8 @@
+import os
+
+from pymongo import MongoClient
+
+
 class S3Config:
     def __init__(self):
         self.IO_FILES_BUCKET = "sensor-io-files"
@@ -22,9 +27,13 @@ class TunerConfig:
 
 class DatabaseConfig:
     def __init__(self):
-        self.database_name = "ineuron"
+        self.DATABASE_NAME = "ineuron"
 
-        self.collection_name = "sensor"
+        self.COLLECTION_NAME = "sensor"
+
+        self.DB_URL = os.environ["MONGODB_URL"]
+
+        self.mongo_client = MongoClient(self.DB_URL)
 
     def get_database_config(self):
         return self.__dict__

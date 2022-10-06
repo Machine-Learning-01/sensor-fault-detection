@@ -215,34 +215,6 @@ class S3Operation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def upload_folder(self, folder_name: str, bucket_name: str) -> None:
-        """
-        Method Name :   upload_file
-        Description :   This method uploads the from_filename file to bucket_name bucket with to_filename as bucket filename
-        
-        Output      :   Folder is created in s3 bucket
-        On Failure  :   Write an exception log and then raise an exception
-        
-        Version     :   1.2
-        Revisions   :   moved setup to cloud
-        """
-        logging.info("Entered the upload_folder method of S3Operations class")
-
-        try:
-            lst = os.listdir(folder_name)
-
-            for f in lst:
-                local_f = os.path.join(folder_name, f)
-
-                dest_f = f
-
-                self.upload_file(local_f, dest_f, bucket_name, remove=False)
-
-            logging.info("Exited the upload_folder method of S3Operations class")
-
-        except Exception as e:
-            raise SensorException(e, sys) from e
-
     def upload_df_as_csv(
         self,
         data_frame: DataFrame,
