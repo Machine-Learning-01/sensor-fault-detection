@@ -16,7 +16,4 @@ train_model:
     criterion:
     - friedman_mse
     - squared_error
-
-
-
 base_model_score: '0.6'

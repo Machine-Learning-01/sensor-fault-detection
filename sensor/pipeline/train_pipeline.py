@@ -82,7 +82,7 @@ class TrainPipeline:
             raise SensorException(e, sys) from e
 
     @staticmethod
-    def start_model_pusher():
+    def start_model_pusher() -> None:
         logging.info("Entered the start_model_pusher method of TrainPipeline class")
 
         try:

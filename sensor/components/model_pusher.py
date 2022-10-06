@@ -13,7 +13,7 @@ class ModelPusher:
 
         self.s3_config = S3Config()
 
-    def initiate_model_pusher(self):
+    def initiate_model_pusher(self) -> None:
         logging.info("Entered initiate_model_pusher method of ModelTrainer class")
 
         try:
@@ -24,7 +24,9 @@ class ModelPusher:
             )
 
             self.s3.upload_file(
-                PREPROCESSOR_OBJ_FILE_NAME, self.s3_config.IO_FILES_BUCKET
+                PREPROCESSOR_OBJ_FILE_NAME,
+                PREPROCESSOR_OBJ_FILE_NAME,
+                self.s3_config.IO_FILES_BUCKET,
             )
 
             logging.info("Uploaded artifacts folder to s3 bucket")

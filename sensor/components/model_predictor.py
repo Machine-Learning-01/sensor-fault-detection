@@ -5,7 +5,8 @@ from pandas import DataFrame
 
 from sensor.components.data_ingestion import DataIngestion
 from sensor.configuration.s3_operations import S3Operation
-from sensor.constant import MODEL_FILE_NAME, PRED_DATA_CSV_FILE, PREDICTIONS_FILE
+from sensor.constant import (ARTIFACTS_DIR, MODEL_FILE_NAME,
+                             PRED_DATA_CSV_FILE, PREDICTIONS_FILE)
 from sensor.entity.config_entity import S3Config
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -24,7 +25,7 @@ class SensorData:
 
         self.s3 = S3Operation()
 
-    def get_data(self):
+    def get_data(self) -> DataFrame:
         logging.info("Entered get_data method of SensorData class")
 
         try:
@@ -61,7 +62,7 @@ class SensorClassifier:
             X = self.pred_data.get_data()
 
             best_model = self.s3.load_model(
-                MODEL_FILE_NAME, self.s3_config.IO_FILES_BUCKET
+                MODEL_FILE_NAME, self.s3_config.IO_FILES_BUCKET, model_dir=ARTIFACTS_DIR
             )
 
             logging.info("Loaded best model from s3 bucket")

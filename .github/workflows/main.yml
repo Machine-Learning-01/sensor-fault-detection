@@ -1,11 +1,8 @@
-name: Deploy Application Docker Image to Azure Web App Service
+name: Deploy Application Docker Image to EC2 instance 
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - "infrastructure/*"
+    branches: [main]
 
 jobs:
   build:
@@ -15,27 +12,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          login-server: ${{ secrets.AZURE_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Build and Push Application Image to Azure Container Registry
-        id: docker-push
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPO }}
+          IMAGE_TAG: latest
         run: |
-          docker build . -t ${{ secrets.AZURE_LOGIN_SERVER }}/${{ secrets.REPO_NAME }}:${{ github.sha }}
+          docker build --build-arg AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" --build-arg AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" --build-arg AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" --build-arg MONGODB_URL="${{ secrets.MONGODB_URL }}" -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-          docker push ${{ secrets.AZURE_LOGIN_SERVER }}/${{ secrets.REPO_NAME }}:${{ github.sha }}
+  Deploy:
+    needs: build
+    runs-on: ubuntu-latest
 
-      - name: Login via Azure CLI
-        uses: azure/login@v1
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Deploy to Azure Web App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "mywebapp"
-          images: ${{ secrets.AZURE_LOGIN_SERVER }}/${{ secrets.REPO_NAME }}:${{ github.sha }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Deploy in EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+          HOSTNAME: ${{ secrets.HOSTNAME  }}
+          USER_NAME: ubuntu
+          IMAGE_TAG: latest
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+            cd /home/ubuntu/ &&
+
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com &&
+          
+            docker run -d -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+          '
