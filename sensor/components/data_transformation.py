@@ -8,7 +8,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
-from sensor.components.data_ingestion import DataIngestion
 from sensor.constant import PREPROCESSOR_OBJ_FILE_NAME, TARGET_COLUMN
 from sensor.entity.config_entity import SimpleImputerConfig
 from sensor.exception import SensorException
@@ -18,8 +17,6 @@ from sensor.utils.main_utils import MainUtils
 
 class DataTransformation:
     def __init__(self):
-        self.data_ingestion = DataIngestion()
-
         self.imputer_config = SimpleImputerConfig()
 
         self.utils = MainUtils()

@@ -3,14 +3,9 @@ import sys
 
 from pandas import DataFrame
 
-from sensor.components.data_ingestion import DataIngestion
 from sensor.configuration.s3_operations import S3Operation
-from sensor.constant import (
-    ARTIFACTS_DIR,
-    MODEL_FILE_NAME,
-    PRED_DATA_CSV_FILE,
-    PREDICTIONS_FILE,
-)
+from sensor.constant import (ARTIFACTS_DIR, MODEL_FILE_NAME,
+                             PRED_DATA_CSV_FILE, PREDICTIONS_FILE)
 from sensor.entity.config_entity import S3Config
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -19,8 +14,6 @@ from sensor.utils.main_utils import MainUtils
 
 class SensorData:
     def __init__(self):
-        self.data_ingestion = DataIngestion()
-
         self.utils = MainUtils()
 
         self.schema_config = self.utils.read_schema_config_file()
