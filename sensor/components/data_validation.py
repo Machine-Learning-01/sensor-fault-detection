@@ -9,19 +9,20 @@ from pandas import DataFrame
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils
+from sensor.entity.artifact_entity import DataIngestionArtifact,DataValidationArtifact
+from sensor.entity.config_entity import DataValidationConfig
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 
 
 class DataValidation:
-    def __init__(self, train_set: DataFrame, test_set: DataFrame):
+    def __init__(self,data_ingestion_artifact:DataIngestionArtifact,data_validation_config:DataValidationConfig):
         self.train_set = train_set
 
         self.test_set = test_set
-
+        self.data_ingestion_artifact = data_ingestion_artifact
         self.validation_status = False
-
         self.utils = MainUtils()
-
-        self._schema_config = self.utils.read_schema_config_file()
+        self._schema_config = self.utils.read_yaml_file(filename=SCHEMA_FILE_PATH)
 
     def validate_schema_columns(self, df: DataFrame) -> bool:
         """
@@ -180,7 +181,7 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def initiate_data_validation(self) -> bool:
+    def initiate_data_validation(self) -> DataValidationArtifact:
         """
         Method Name :   initiate_data_validation
         Description :   This method initiates the data validation component for the pipeline
@@ -196,43 +197,32 @@ class DataValidation:
         try:
             logging.info("Initiated data validation for the dataset")
 
-            drift = self.detect_dataset_drift(self.train_set, self.test_set)
-
-            (
-                schema_train_col_status,
-                schema_test_col_status,
-            ) = self.validate_dataset_schema_columns()
-
+            schema_train_col_status,schema_test_col_status = self.validate_dataset_schema_columns()
             logging.info(
                 f"Schema train cols status is {schema_train_col_status} and schema test cols status is {schema_test_col_status}"
             )
-
             logging.info("Validated dataset schema columns")
-
-            (
-                schema_train_num_cols_status,
-                schema_test_num_cols_status,
-            ) = self.validate_dataset_schema_for_numerical_datatype()
-
+            schema_train_num_cols_status,schema_test_num_cols_status= self.validate_dataset_schema_for_numerical_datatype()
             logging.info(
                 f"Schema train numerical cols status is {schema_train_num_cols_status} and schema test numerical cols status is {schema_test_num_cols_status}"
             )
 
             logging.info("Validated dataset schema for numerical datatype")
-
-            if (
+            status = (
                 schema_train_num_cols_status is True
                 and schema_test_num_cols_status is True
                 and schema_train_col_status is True
                 and schema_test_col_status is True
-                and drift is False
-            ):
-                logging.info("Dataset schema validation completed")
-
-                return True
-
-            else:
-                return False
-
+              
+            )
+            if status:
+                drift = self.detect_dataset_drift(self.train_set, self.test_set)
+            status=drift
+            data_validation_artifact=   DataValidationArtifact(validation_status=status,
+            valid_train_file_path=self.data_ingestion_artifact.trained_file_path,
+            valid_test_file_path=self.data_ingestion_artifact.tested_file_path)
+            # )
+            logging.info(f"Data validation artifact: {data_validation_artifact}")
+            return data_validation_artifact
         except Exception as e:
             raise SensorException(e, sys) from e

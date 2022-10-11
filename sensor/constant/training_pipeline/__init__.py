@@ -1,5 +1,5 @@
 #pipeline name and root directory constant
-
+import os
 PIPELINE_NAME:str = "sensor"
 ARTIFACT_DIR:str = "artifact"
 
@@ -10,6 +10,7 @@ TRAIN_FILE_NAME:str = "train.csv"
 TEST_FILE_NAME:str = "test.csv"
 PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
 MODEL_FILE_NAME = "model.pkl"
+SCHEMA_FILE_PATH = os.path.join("config","schema.yaml")
 
 """
 Data Ingestion related constant start with DATA_INGESTION VAR NAME

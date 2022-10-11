@@ -1,3 +1,4 @@
+from email import header
 import sys
 from typing import Tuple
 
@@ -6,7 +7,8 @@ from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
 from sensor.configuration.mongo_client import MongoDBOperation
-from sensor.entity.config_entity import DataIngestionConfig,DatabaseConfig
+from sensor.entity.config_entity import DataIngestionConfig
+from sensor.entity.artifact_entity import DataIngestionArtifact
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils.main_utils import MainUtils
@@ -45,9 +47,7 @@ class DataIngestion:
         except Exception as e:
             raise SensorException(e,sys)
 
-
-
-    def split_data_as_train_test(self,dataframe: DataFrame) ->List[str]:
+    def split_data_as_train_test(self,dataframe: DataFrame) ->None:
         """
         Method Name :   split_data_as_train_test
         Description :   This method splits the dataframe into train set and test set based on split ratio 
@@ -66,45 +66,18 @@ class DataIngestion:
             logging.info(
                 "Exited split_data_as_train_test method of Data_Ingestion class"
             )
+            dir_path = os.path.dirname(self.data_ingestion_config.training_file_path)
+            os.makedirs(dir_path,exist_ok=True)
             
-            return train_set, test_set
+            logging.info(f"Exporting train and test file path.")
+            train_set.to_csv(self.data_ingestion_config.training_file_path,index=False,header=True)
+            test_set.to_csv(self.data_ingestion_config.testing_file_path,index=False,header=True)
+
+            logging.info(f"Exported train and test file path.")
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_data_from_mongodb(self) -> DataFrame:
-        """
-        Method Name :   split_data_as_train_test
-        Description :   This method splits the dataframe into train set and test set based on split ratio 
-        
-        Output      :   Folder is created in s3 bucket
-        On Failure  :   Write an exception log and then raise an exception
-        
-        Version     :   1.2
-        Revisions   :   moved setup to cloud
-        """
-        logging.info("Entered get_data_from_mongodb method of Data_Ingestion class")
-
-        try:
-            logging.info("Getting the dataframe from mongodb")
-
-            df = self.mongo_op.get_collection_as_dataframe(
-                self.mongo_config.DATABASE_NAME, self.mongo_config.COLLECTION_NAME
-            )
-
-            df = df.replace("na", np.nan)
-
-            logging.info("Got the dataframe from mongodb")
-
-            logging.info(
-                "Exited the get_data_from_mongodb method of Data_Ingestion class"
-            )
-
-            return df
-
-        except Exception as e:
-            raise SensorException(e, sys) from e
-
-    def initiate_data_ingestion(self) -> Tuple[DataFrame, DataFrame]:
+    def initiate_data_ingestion(self) ->DataIngestionArtifact:
         """
         Method Name :   initiate_data_ingestion
         Description :   This method initiates the data ingestion components of training pipeline 
@@ -118,15 +91,14 @@ class DataIngestion:
         logging.info("Entered initiate_data_ingestion method of Data_Ingestion class")
 
         try:
-            df = self.get_data_from_mongodb()
-
+            dataframe = self.export_data_into_feature_store()
             _schema_config = self.utils.read_schema_config_file()
 
-            df1 = df.drop(_schema_config["drop_columns"], axis=1)
+            dataframe = dataframe.drop(_schema_config["drop_columns"], axis=1)
 
             logging.info("Got the data from mongodb")
 
-            train_set, test_set = self.split_data_as_train_test(df1)
+            self.split_data_as_train_test(dataframe)
 
             logging.info("Performed train test split on the dataset")
 
@@ -134,7 +106,10 @@ class DataIngestion:
                 "Exited initiate_data_ingestion method of Data_Ingestion class"
             )
 
-            return train_set, test_set
-
+            data_ingestion_artifact = DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path,
+                                                            test_file_path=self.data_ingestion_config.testing_file_path)
+            
+            logging.info(f"Data ingestion artifact: {data_ingestion_artifact}")
+            return data_ingestion_artifact
         except Exception as e:
             raise SensorException(e, sys) from e

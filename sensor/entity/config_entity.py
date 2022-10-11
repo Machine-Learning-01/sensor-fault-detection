@@ -23,6 +23,7 @@ class DataIngestionConfig:
     training_file_path:str = os.path.join(data_ingestion_dir,DATA_INGESTION_INGESTED_DIR,TRAIN_FILE_NAME)
     testing_file_path:str = os.path.join(data_ingestion_dir,DATA_INGESTION_INGESTED_DIR,TEST_FILE_NAME)
     train_test_split_ratio:float = DATA_INGESTION_TRAIN_TEST_SPLIT_RATION 
+
 @dataclass
 class DataValidationConfig:
     data_validation_dir:str = os.path.join(training_pipeline_config.artifact_dir,DATA_VALIDATION_DIR_NAME)
@@ -54,7 +55,7 @@ class ModelEvaluationConfig:
 @dataclass
 class ModelPusherConfig:
     bucket_name:str =  MODEL_PUSHER_BUCKET_NAME
-    s3_model_key_path:str = os.pa.path.join(MODEL_PUSHER_BUCKET_NAME,MODEL_PUSHER_S3_KEY,MODEL_FILE_NAME)
+    s3_model_key_path:str = os.path.join(MODEL_PUSHER_BUCKET_NAME,MODEL_PUSHER_S3_KEY,MODEL_FILE_NAME)
 
 
 
