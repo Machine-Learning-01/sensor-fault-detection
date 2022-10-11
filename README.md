@@ -61,7 +61,7 @@ conda activate sensor
 pip install -r requirements.txt
 ```
 
-### Step 4 - Export the  environment variable
+### Step 4 - Export the environment variable
 ```bash
 export AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
 
@@ -92,18 +92,16 @@ http://localhost:8080/predict
 
 ## Run locally
 
-1. Check if the Dockerfile is availabel in the project directory
+1. Check if the Dockerfile is available in the project directory
 
 2. Build the Docker image
-
 ```
 docker build --build-arg AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> --build-arg AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> --build-arg AWS_DEFAULT_REGION=<AWS_DEFAULT_REGION> --build-arg MONGODB_URL=<MONGODB_URL> . 
 
 ```
 
 3. Run the Docker image
-
 ```
-docker run -d -p 8080:8080 <IMAGEID>
+docker run -d -p 8080:8080 <IMAGE_NAME>
 ```
 
