@@ -8,11 +8,17 @@ __pycache__/
 
 artifacts
 
+.idea
+
 demotest.py
 
 aps_failure_training_set1.csv
 
 sensor/logs
+
+.terraform.lock.hcl
+
+.terraform
 
 # Distribution / packaging
 .Python
