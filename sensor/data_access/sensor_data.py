@@ -1,4 +1,4 @@
-from sensor.configuration.mongo_client import MongoDBClient
+from sensor.configuration.mongo_db_connection import MongoDBClient
 from sensor.constant.database import DATABASE_NAME
 from sensor.exception import SensorException
 import pandas as pd

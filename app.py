@@ -4,7 +4,7 @@ from fastapi.responses import Response
 from uvicorn import run as app_run
 
 from sensor.components.model_predictor import SensorClassifier
-from sensor.constant import APP_HOST, APP_PORT
+from sensor.constant.application import APP_HOST, APP_PORT
 from sensor.pipeline.train_pipeline import TrainPipeline
 
 app = FastAPI()
