@@ -11,9 +11,9 @@ module "sensor_ec2" {
 }
 
 module "sensor_io_files_bucket" {
-  source = "./scania_truck_io_files_bucket"
+  source = "./sensor_io_files_bucket"
 }
 
 module "sensor_ecr" {
-  source = "./scania_truck_ecr"
+  source = "./sensor_ecr"
 }
