@@ -1,3 +1,4 @@
+from logging import exception
 import boto3
 from sensor.configuration.aws_connection import S3Client
 from io import StringIO
@@ -15,6 +16,19 @@ class SimpleStorageService:
         s3_client = S3Client()
         self.s3_resource = s3_client.s3_resource
         self.s3_client = s3_client.s3_client
+
+    def s3_key_path_available(self,bucket_name,s3_key)->bool:
+        try:
+            bucket = self.get_bucket(bucket_name)
+            file_objects = [file_object for file_object in bucket.objects.filter(Prefix=s3_key)]
+            if len(file_objects) > 0:
+                return True
+            else:
+                return False
+        except Exception as e:
+            raise SensorException(e,sys)
+        
+        
 
     @staticmethod
     def read_object(object_name: str, decode: bool = True, make_readable: bool = False) -> Union[StringIO, str]:

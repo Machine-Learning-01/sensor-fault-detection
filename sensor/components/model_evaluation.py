@@ -10,7 +10,9 @@ import pandas as pd
 from typing import Dict
 from sensor.entity.s3_estimator import SensorEstimator
 from dataclasses import dataclass
-
+from sensor.entity.estimator import SensorModel
+from typing import Optional
+from sensor.entity.estimator import TargetValueMapping
 
 @dataclass
 class EvaluateModelResponse:
@@ -31,12 +33,16 @@ class ModelEvaluation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_best_model(self) -> SensorEstimator:
+    def get_best_model(self) -> Optional[SensorEstimator]:
         try:
-            sensor_estimator = SensorEstimator(bucket_name=self.model_trainer_artifact.bucket_name,
-                                               model_path=self.model_eval_config.model_path)
+            bucket_name = self.model_eval_config.bucket_name
+            model_path=self.model_eval_config.s3_model_key_path
+            sensor_estimator = SensorEstimator(bucket_name=bucket_name,
+                                               model_path=model_path)
 
-            return sensor_estimator
+            if sensor_estimator.is_model_present(model_path=model_path):
+                return sensor_estimator
+            return None
         except Exception as e:
             raise  SensorException(e,sys)
 
@@ -44,22 +50,23 @@ class ModelEvaluation:
         try:
             test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
             x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
-
-            best_model = self.get_best_model()
             trained_model = load_object(file_path=self.model_trainer_artifact.trained_model_file_path)
-
-            y_hat_best_model = best_model.predict(x)
+            y.replace(TargetValueMapping()._asdict(),inplace=True)
             y_hat_trained_model = trained_model.predict(x)
-
+            
             trained_model_f1_score = f1_score(y, y_hat_trained_model)
-            best_model_f1_score = f1_score(y, y_hat_best_model)
-
+            best_model_f1_score=None
+            best_model = self.get_best_model()
+            if best_model is not None:
+                y_hat_best_model = best_model.predict(x)
+                best_model_f1_score = f1_score(y, y_hat_best_model)
+            
             # calucate how much percentage training model accuracy is increased/decreased
-
+            tmp_best_model_score = 0 if best_model_f1_score is None else best_model_f1_score
             result = EvaluateModelResponse(trained_model_f1_score=trained_model_f1_score,
                                            best_model_f1_score=best_model_f1_score,
-                                           is_model_accepted=trained_model_f1_score > best_model_f1_score,
-                                           difference=trained_model_f1_score - best_model_f1_score
+                                           is_model_accepted=trained_model_f1_score > tmp_best_model_score,
+                                           difference=trained_model_f1_score - tmp_best_model_score
                                            )
             logging.info(f"Result: {result}")
             return result

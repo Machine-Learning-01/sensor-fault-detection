@@ -6,6 +6,7 @@ from uvicorn import run as app_run
 from sensor.pipeline.prediction_pipeline import PredictionPipeline
 from sensor.constant.application import APP_HOST, APP_PORT
 from sensor.pipeline.train_pipeline import TrainPipeline
+from starlette.responses import HTMLResponse, RedirectResponse
 
 app = FastAPI()
 
@@ -19,6 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/", tags=["authentication"])
+async def index():
+    
+    return RedirectResponse(url="/docs")
 
 @app.get("/train")
 async def trainRouteClient():

@@ -10,7 +10,7 @@ from sensor.entity.config_entity import DataIngestionConfig
 from sensor.entity.artifact_entity import DataIngestionArtifact
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import MainUtils,read_yaml_file
+from sensor.utils.main_utils import read_yaml_file
 from sensor.data_access.sensor_data import SensorData
 from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 from typing import List

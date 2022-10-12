@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "io_files" {
   type    = string
-  default = "sensor-io-files"
+  default = "sensor-model"
 }
 
 variable "aws_account_id" {

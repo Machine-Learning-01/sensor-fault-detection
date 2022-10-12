@@ -1,5 +1,6 @@
 import json
 import sys
+from tkinter import E
 from typing import Tuple, Union
 
 import pandas as pd
@@ -9,7 +10,7 @@ from pandas import DataFrame
 
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import MainUtils, write_yaml_file
+from sensor.utils.main_utils import read_yaml_file, write_yaml_file
 from sensor.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from sensor.entity.config_entity import DataValidationConfig
 from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
@@ -17,9 +18,12 @@ from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 
 class DataValidation:
     def __init__(self, data_ingestion_artifact: DataIngestionArtifact, data_validation_config: DataValidationConfig):
-        self.data_ingestion_artifact = data_ingestion_artifact
-        self.data_validation_config = data_validation_config
-        self._schema_config = MainUtils().read_yaml_file(filename=SCHEMA_FILE_PATH)
+        try:
+            self.data_ingestion_artifact = data_ingestion_artifact
+            self.data_validation_config = data_validation_config
+            self._schema_config =read_yaml_file(file_path=SCHEMA_FILE_PATH)
+        except Exception as e:
+            raise SensorException(e,sys)
 
     def validate_number_of_columns(self, dataframe: DataFrame) -> bool:
         """

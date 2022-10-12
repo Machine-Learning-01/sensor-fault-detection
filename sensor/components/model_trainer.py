@@ -7,7 +7,7 @@ from pandas import DataFrame
 
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import MainUtils, load_numpy_array_data, read_yaml_file, load_object, save_object
+from sensor.utils.main_utils import load_numpy_array_data, read_yaml_file, load_object, save_object
 from sklearn.pipeline import Pipeline
 from sensor.entity.config_entity import ModelTrainerConfig
 from sensor.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
@@ -19,25 +19,25 @@ class ModelTrainer:
                  model_trainer_config: ModelTrainerConfig):
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
-        self.main_utils = MainUtils()
+    #     self.main_utils = MainUtils()
 
-    def get_trained_models(self, train_arr: np.ndarray, test_arr: np.ndarray) -> List[Tuple[float, object, str]]:
-        try:
-            logging.info("Entered get_trained_models method of ModelTrainer class")
-            model_config = read_yaml_file(file_path=self.model_trainer_config.model_config_file_path)
-            models_list = list(model_config["train_model"].keys())
-            logging.info("Got model list from the config file")
-            x_train, y_train, x_test, y_test = train_arr[:, :-1], train_arr[:, -1], test_arr[:, :-1], test_arr[:, -1]
+    # def get_trained_models(self, train_arr: np.ndarray, test_arr: np.ndarray) -> List[Tuple[float, object, str]]:
+    #     try:
+    #         logging.info("Entered get_trained_models method of ModelTrainer class")
+    #         model_config = read_yaml_file(file_path=self.model_trainer_config.model_config_file_path)
+    #         models_list = list(model_config["train_model"].keys())
+    #         logging.info("Got model list from the config file")
+    #         x_train, y_train, x_test, y_test = train_arr[:, :-1], train_arr[:, -1], test_arr[:, :-1], test_arr[:, -1]
 
-            tuned_model_list = [(self.main_utils.get_tuned_model(model_name, x_train, y_train, x_test, y_test, ))
-                                for model_name in models_list]
+    #         tuned_model_list = [(self.main_utils.get_tuned_model(model_name, x_train, y_train, x_test, y_test, ))
+    #                             for model_name in models_list]
 
-            logging.info("Got trained model list")
-            logging.info("Exited the get_trained_models method of ModelFinder class")
+    #         logging.info("Got trained model list")
+    #         logging.info("Exited the get_trained_models method of ModelFinder class")
 
-            return tuned_model_list
-        except Exception as e:
-            raise SensorException(e, sys) from e
+    #         return tuned_model_list
+    #     except Exception as e:
+    #         raise SensorException(e, sys) from e
 
     def initiate_model_trainer(self, ) -> ModelTrainerArtifact:
         logging.info("Entered initiate_model_trainer method of ModelTrainer class")

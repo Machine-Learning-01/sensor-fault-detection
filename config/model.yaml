@@ -17,14 +17,14 @@ model_selection:
       max_depth:
       - 3
 
-  module_1:
-    class: GradientBoostingClassifier
-    module: sklearn.ensemble
-    search_param_grid:
-      log_loss:
-      - deviance
-      n_estimators:
-      - 100
-      criterion:
-      - friedman_mse
+  # module_1:
+  #   class: GradientBoostingClassifier
+  #   module: sklearn.ensemble
+  #   search_param_grid:
+  #     loss:
+  #     - deviance
+  #     n_estimators:
+  #     - 100
+  #     criterion:
+  #     - friedman_mse
     
