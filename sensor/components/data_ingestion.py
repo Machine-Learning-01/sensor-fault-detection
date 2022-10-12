@@ -10,10 +10,12 @@ from sensor.entity.config_entity import DataIngestionConfig
 from sensor.entity.artifact_entity import DataIngestionArtifact
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import MainUtils
+from sensor.utils.main_utils import MainUtils,read_yaml_file
 from sensor.data_access.sensor_data import SensorData
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 from typing import List
 import os
+
 from sensor.logger import logging
 class DataIngestion:
     def __init__(self,data_ingestion_config:DataIngestionConfig=DataIngestionConfig()):
@@ -87,7 +89,7 @@ class DataIngestion:
 
         try:
             dataframe = self.export_data_into_feature_store()
-            _schema_config = self.utils.read_schema_config_file()
+            _schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
 
             dataframe = dataframe.drop(_schema_config["drop_columns"], axis=1)
 

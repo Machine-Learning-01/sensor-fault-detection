@@ -8,7 +8,7 @@ from sensor.logger import logging
 import os, sys
 import pandas as pd
 from typing import Dict
-
+from sensor.entity.s3_estimator import SensorEstimator
 from dataclasses import dataclass
 
 
@@ -31,9 +31,12 @@ class ModelEvaluation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_best_model(self) -> object:
+    def get_best_model(self) -> SensorEstimator:
         try:
-            return load_object(self.model_trainer_artifact.trained_model_file_path)
+            sensor_estimator = SensorEstimator(bucket_name=self.model_trainer_artifact.bucket_name,
+                                               model_path=self.model_eval_config.model_path)
+
+            return sensor_estimator
         except Exception as e:
             raise  SensorException(e,sys)
 

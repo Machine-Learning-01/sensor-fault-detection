@@ -4,6 +4,7 @@ from sensor.exception import SensorException
 import pandas as pd
 import os,sys
 from typing import Optional
+import numpy as np
 
 class SensorData:
     """
@@ -32,6 +33,7 @@ class SensorData:
             df = pd.DataFrame(list(collection.find()))
             if "_id" in df.columns.to_list():
                 df = df.drop(columns=["_id"], axis=1)
+            df.replace({"na":np.nan},inplace=True)
             return df
         except Exception as e:
             raise SensorException(e,sys)

@@ -93,6 +93,8 @@ class TrainPipeline:
             raise SensorException(e, sys)
 
     def start_model_pusher(self, model_trainer_artifact: ModelTrainerArtifact):
+        """
+        """
         try:
             model_pusher = ModelPusher(model_trainer_artifact=model_trainer_artifact,
                                        model_pusher_config=self.model_pusher_config

@@ -123,10 +123,10 @@ class DataValidation:
                 validation_error_msg += f"Numerical columns are missing in test dataframe."
 
             validation_status = len(validation_error_msg) == 0
-            if validation_status:
-                drift_status = self.detect_dataset_drift(train_df, test_df)
-                if drift_status:
-                    logging.info(f"Drift detected.")
+            if validation_status:...
+                # drift_status = self.detect_dataset_drift(train_df, test_df)
+                # if drift_status:
+                #     logging.info(f"Drift detected.")
             else:
                 logging.info(f"Validation_error: {validation_error_msg}")
             data_validation_artifact = DataValidationArtifact(

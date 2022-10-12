@@ -11,34 +11,8 @@ from sensor.utils.main_utils import MainUtils, load_numpy_array_data, read_yaml_
 from sklearn.pipeline import Pipeline
 from sensor.entity.config_entity import ModelTrainerConfig
 from sensor.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
-
-
-class SensorModel:
-    def __init__(self, preprocessing_object: Pipeline, trained_model_object: object):
-        self.preprocessing_object = preprocessing_object
-        self.trained_model_object = trained_model_object
-
-    def predict(self, dataframe: DataFrame) -> DataFrame:
-        logging.info("Entered predict method of SensorTruckModel class")
-
-        try:
-            logging.info("Using the trained model to get predictions")
-
-            transformed_feature = self.preprocessing_object.transform(dataframe)
-
-            logging.info("Used the trained model to get predictions")
-
-            return self.trained_model_object.predict(transformed_feature)
-
-        except Exception as e:
-            raise SensorException(e, sys) from e
-
-    def __repr__(self):
-        return f"{type(self.trained_model_object).__name__}()"
-
-    def __str__(self):
-        return f"{type(self.trained_model_object).__name__}()"
-
+from neuro_mf  import ModelFactory
+from sensor.entity.estimator import SensorModel
 
 class ModelTrainer:
     def __init__(self, data_transformation_artifact: DataTransformationArtifact,
@@ -71,24 +45,26 @@ class ModelTrainer:
         try:
             train_arr = load_numpy_array_data(file_path=self.data_transformation_artifact.transformed_train_file_path)
             test_arr = load_numpy_array_data(file_path=self.data_transformation_artifact.transformed_test_file_path)
+            x_train, y_train, x_test, y_test = train_arr[:, :-1], train_arr[:, -1], test_arr[:, :-1], test_arr[:, -1]
+            # list_of_trained_models = self.get_trained_models(train_arr, test_arr)
 
-            list_of_trained_models = self.get_trained_models(train_arr, test_arr)
+            # logging.info("Got a list of tuple of model score, model and model name")
 
-            logging.info("Got a list of tuple of model score, model and model name")
+            # (best_model, best_model_score,) = self.main_utils.get_best_model_with_name_and_score(list_of_trained_models)
 
-            (best_model, best_model_score,) = self.main_utils.get_best_model_with_name_and_score(list_of_trained_models)
+            # logging.info("Got best model score, model and model name")
 
-            logging.info("Got best model score, model and model name")
-
+            model_factory = ModelFactory(model_config_path=self.model_trainer_config.model_config_file_path)
+            best_model_detail = model_factory.get_best_model(X=x_train,y=y_train,base_accuracy=self.model_trainer_config.expected_accuracy)
             preprocessing_obj = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
 
 
-            if best_model_score < self.model_trainer_config.expected_accuracy:
+            if best_model_detail.best_score < self.model_trainer_config.expected_accuracy:
                 logging.info("No best model found with score more than base score")
                 raise Exception("No best model found with score more than base score")
 
             sensor_model = SensorModel(preprocessing_object=preprocessing_obj,
-                                       trained_model_object=best_model)
+                                       trained_model_object=best_model_detail.best_model)
             logging.info("Created Sensor truck model object with preprocessor and model")
             logging.info("Created best model file path.")
             save_object(self.model_trainer_config.trained_model_file_path, sensor_model)

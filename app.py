@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from uvicorn import run as app_run
 
-from sensor.components.model_predictor import SensorClassifier
+from sensor.pipeline.prediction_pipeline import PredictionPipeline
 from sensor.constant.application import APP_HOST, APP_PORT
 from sensor.pipeline.train_pipeline import TrainPipeline
 
@@ -36,13 +36,9 @@ async def trainRouteClient():
 @app.get("/predict")
 async def predictRouteClient():
     try:
-        model_predictor = SensorClassifier()
-
-        model_predictor.predict()
-
-        return Response(
-            "Prediction successful and predictions are stored in s3 bucket !!"
-        )
+        prediction_pipeline = PredictionPipeline()
+        prediction_pipeline.initiate_prediction()
+        return Response( "Prediction successful and predictions are stored in s3 bucket !!" )
 
     except Exception as e:
         return Response(f"Error Occurred! {e}")
