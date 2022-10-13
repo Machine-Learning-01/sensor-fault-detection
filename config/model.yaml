@@ -4,6 +4,7 @@ grid_search:
   params:
     cv: 3
     verbose: 3
+
 model_selection:
   module_0:
     class: XGBClassifier

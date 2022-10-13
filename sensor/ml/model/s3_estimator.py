@@ -1,7 +1,7 @@
 from sensor.cloud_storage.aws_storage import SimpleStorageService
 from sensor.exception import SensorException
-from sensor.entity.estimator import SensorModel
-import os,sys
+from sensor.ml.model.estimator import SensorModel
+import sys
 from pandas import DataFrame
 class SensorEstimator:
     """

@@ -5,7 +5,7 @@ from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.entity.artifact_entity import ModelPusherArtifact, ModelTrainerArtifact
 from sensor.entity.config_entity import ModelPusherConfig
-from sensor.entity.s3_estimator import SensorEstimator
+from sensor.ml.model.s3_estimator import SensorEstimator
 
 
 class ModelPusher:

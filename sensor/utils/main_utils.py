@@ -13,7 +13,6 @@ from sklearn.utils import all_estimators
 from yaml import safe_dump
 
 from sensor.constant.training_pipeline import MODEL_TRAINER_MODEL_CONFIG_FILE_PATH, SCHEMA_FILE_PATH
-from sensor.entity.config_entity import TunerConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
 

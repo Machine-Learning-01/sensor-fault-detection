@@ -1,24 +1,21 @@
 import sys
-from typing import List, Tuple
-
-import numpy as np
-import pandas as pd
-from pandas import DataFrame
 
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import load_numpy_array_data, read_yaml_file, load_object, save_object
-from sklearn.pipeline import Pipeline
+from sensor.utils.main_utils import load_numpy_array_data, load_object, save_object
 from sensor.entity.config_entity import ModelTrainerConfig
 from sensor.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
-from neuro_mf  import ModelFactory
-from sensor.entity.estimator import SensorModel
+from neuro_mf import ModelFactory
+from sensor.ml.model.estimator import SensorModel
+from sensor.ml.metric import calculate_metric
+
 
 class ModelTrainer:
     def __init__(self, data_transformation_artifact: DataTransformationArtifact,
                  model_trainer_config: ModelTrainerConfig):
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
+
     #     self.main_utils = MainUtils()
 
     # def get_trained_models(self, train_arr: np.ndarray, test_arr: np.ndarray) -> List[Tuple[float, object, str]]:
@@ -55,9 +52,9 @@ class ModelTrainer:
             # logging.info("Got best model score, model and model name")
 
             model_factory = ModelFactory(model_config_path=self.model_trainer_config.model_config_file_path)
-            best_model_detail = model_factory.get_best_model(X=x_train,y=y_train,base_accuracy=self.model_trainer_config.expected_accuracy)
+            best_model_detail = model_factory.get_best_model(X=x_train, y=y_train,
+                                                             base_accuracy=self.model_trainer_config.expected_accuracy)
             preprocessing_obj = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
-
 
             if best_model_detail.best_score < self.model_trainer_config.expected_accuracy:
                 logging.info("No best model found with score more than base score")
@@ -69,7 +66,7 @@ class ModelTrainer:
             logging.info("Created best model file path.")
             save_object(self.model_trainer_config.trained_model_file_path, sensor_model)
 
-            metric_artifact = ClassificationMetricArtifact(f1_score=0.8, precision_score=0.8, recall_score=0.9)
+            metric_artifact = calculate_metric(model=best_model_detail.best_model, x=x_test, y=y_test)
             model_trainer_artifact = ModelTrainerArtifact(
                 trained_model_file_path=self.model_trainer_config.trained_model_file_path,
                 metric_artifact=metric_artifact,

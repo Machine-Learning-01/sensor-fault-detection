@@ -5,21 +5,23 @@ from sklearn.metrics import f1_score
 from sensor.exception import SensorException
 from sensor.constant.training_pipeline import TARGET_COLUMN
 from sensor.logger import logging
-import os, sys
+import sys
 import pandas as pd
-from typing import Dict
-from sensor.entity.s3_estimator import SensorEstimator
+from sensor.ml.model.s3_estimator import SensorEstimator
 from dataclasses import dataclass
-from sensor.entity.estimator import SensorModel
 from typing import Optional
-from sensor.entity.estimator import TargetValueMapping
+from sensor.ml.model.estimator import TargetValueMapping
+from sensor.ml.metric import calculate_metric
+from sensor.entity.artifact_entity import ClassificationMetricArtifact
+
 
 @dataclass
 class EvaluateModelResponse:
     trained_model_f1_score: float
     best_model_f1_score: float
     is_model_accepted: bool
-    difference: float
+    changed_accuracy: float
+    best_model_metric_artifact: ClassificationMetricArtifact
 
 
 class ModelEvaluation:
@@ -36,7 +38,7 @@ class ModelEvaluation:
     def get_best_model(self) -> Optional[SensorEstimator]:
         try:
             bucket_name = self.model_eval_config.bucket_name
-            model_path=self.model_eval_config.s3_model_key_path
+            model_path = self.model_eval_config.s3_model_key_path
             sensor_estimator = SensorEstimator(bucket_name=bucket_name,
                                                model_path=model_path)
 
@@ -44,29 +46,31 @@ class ModelEvaluation:
                 return sensor_estimator
             return None
         except Exception as e:
-            raise  SensorException(e,sys)
+            raise SensorException(e, sys)
 
     def evaluate_model(self) -> EvaluateModelResponse:
         try:
             test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
             x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
             trained_model = load_object(file_path=self.model_trainer_artifact.trained_model_file_path)
-            y.replace(TargetValueMapping()._asdict(),inplace=True)
+            y.replace(TargetValueMapping().to_dict(), inplace=True)
             y_hat_trained_model = trained_model.predict(x)
-            
+
             trained_model_f1_score = f1_score(y, y_hat_trained_model)
-            best_model_f1_score=None
+            best_model_f1_score = None
+            best_model_metric_artifact = None
             best_model = self.get_best_model()
             if best_model is not None:
                 y_hat_best_model = best_model.predict(x)
                 best_model_f1_score = f1_score(y, y_hat_best_model)
-            
+                best_model_metric_artifact = calculate_metric(best_model, x, y)
             # calucate how much percentage training model accuracy is increased/decreased
             tmp_best_model_score = 0 if best_model_f1_score is None else best_model_f1_score
             result = EvaluateModelResponse(trained_model_f1_score=trained_model_f1_score,
                                            best_model_f1_score=best_model_f1_score,
                                            is_model_accepted=trained_model_f1_score > tmp_best_model_score,
-                                           difference=trained_model_f1_score - tmp_best_model_score
+                                           changed_accuracy=trained_model_f1_score - tmp_best_model_score,
+                                           best_model_metric_artifact=best_model_metric_artifact
                                            )
             logging.info(f"Result: {result}")
             return result
@@ -81,7 +85,9 @@ class ModelEvaluation:
                 is_model_accepted=evaluate_model_response.is_model_accepted,
                 best_model_path=self.model_trainer_artifact.trained_model_file_path,
                 trained_model_path=self.model_trainer_artifact.trained_model_file_path,
-                changed_accuracy=evaluate_model_response.difference)
+                changed_accuracy=evaluate_model_response.changed_accuracy,
+                best_model_metric_artifact=evaluate_model_response.best_model_metric_artifact
+            )
 
             logging.info(f"Model evaluation artifact: {model_evaluation_artifact}")
             return model_evaluation_artifact

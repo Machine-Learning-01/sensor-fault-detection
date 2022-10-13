@@ -1,8 +1,4 @@
-from sensor.entity.config_entity import PredictionPipelineConfig
-from sensor.entity.s3_estimator import SensorEstimator
-from sensor.exception import SensorException
-import os,sys
-import logging
+from sensor.ml.model.s3_estimator import SensorEstimator
 import sys
 import numpy as np
 
@@ -15,7 +11,7 @@ from sensor.logger import logging
 from sensor.utils.main_utils import read_yaml_file
 from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 from sensor.entity.config_entity import PredictionPipelineConfig
-from sensor.entity.estimator import TargetValueMapping
+from sensor.ml.model.estimator import TargetValueMapping
 
 
 class PredictionPipeline:

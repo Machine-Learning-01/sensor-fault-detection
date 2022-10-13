@@ -1,12 +1,9 @@
 import sys
-from typing import Union
 
 import numpy as np
 import pandas as pd
 from imblearn.combine import SMOTETomek
-from pandas import DataFrame
 from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
 from sensor.constant.training_pipeline import TARGET_COLUMN
@@ -16,7 +13,7 @@ from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils.main_utils import save_object, save_numpy_array_data
 from sklearn.pipeline import Pipeline
-from sensor.entity.estimator import TargetValueMapping
+from sensor.ml.model.estimator import TargetValueMapping
 
 class DataTransformation:
     def __init__(self, data_ingestion_artifact: DataIngestionArtifact,
@@ -85,7 +82,7 @@ class DataTransformation:
             target_feature_train_df = train_df[TARGET_COLUMN]
 
             target_feature_train_df = target_feature_train_df.replace(
-                TargetValueMapping()._asdict()
+                TargetValueMapping().to_dict()
             )
 
             logging.info("Got train features and test features of Training dataset")
@@ -95,7 +92,7 @@ class DataTransformation:
             target_feature_test_df = test_df[TARGET_COLUMN]
 
             target_feature_test_df = target_feature_test_df.replace(
-              TargetValueMapping()._asdict()
+              TargetValueMapping().to_dict()
             )
             logging.info("Got train features and test features of Testing dataset")
 
