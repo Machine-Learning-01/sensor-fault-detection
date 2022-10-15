@@ -1,10 +1,10 @@
+import sys
+
 from pandas import DataFrame
 from sklearn.pipeline import Pipeline
+
 from sensor.exception import SensorException
 from sensor.logger import logging
-import os, sys
-
-from dataclasses import dataclass
 
 
 class TargetValueMapping:

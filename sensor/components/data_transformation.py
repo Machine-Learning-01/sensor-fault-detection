@@ -4,20 +4,25 @@ import numpy as np
 import pandas as pd
 from imblearn.combine import SMOTETomek
 from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
 from sensor.constant.training_pipeline import TARGET_COLUMN
+from sensor.entity.artifact_entity import (DataIngestionArtifact,
+                                           DataTransformationArtifact)
 from sensor.entity.config_entity import DataTransformationConfig
-from sensor.entity.artifact_entity import DataTransformationArtifact, DataIngestionArtifact
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import save_object, save_numpy_array_data
-from sklearn.pipeline import Pipeline
 from sensor.ml.model.estimator import TargetValueMapping
+from sensor.utils.main_utils import save_numpy_array_data, save_object
+
 
 class DataTransformation:
-    def __init__(self, data_ingestion_artifact: DataIngestionArtifact,
-                 data_transformation_config: DataTransformationConfig):
+    def __init__(
+        self,
+        data_ingestion_artifact: DataIngestionArtifact,
+        data_transformation_config: DataTransformationConfig,
+    ):
         """
 
         :param data_ingestion_artifact: Output reference of data ingestion artifact stage
@@ -54,9 +59,7 @@ class DataTransformation:
             logging.info("Initialized RobustScaler, Simple Imputer")
 
             preprocessor = Pipeline(
-                steps=[("Imputer", simple_imputer),
-                       ("RobustScaler", robust_scaler)
-                       ]
+                steps=[("Imputer", simple_imputer), ("RobustScaler", robust_scaler)]
             )
 
             logging.info("Created preprocessor object from ColumnTransformer")
@@ -69,14 +72,18 @@ class DataTransformation:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def initiate_data_transformation(self, ) -> DataTransformationArtifact:
+    def initiate_data_transformation(self,) -> DataTransformationArtifact:
         try:
             logging.info("Starting data transformation")
             preprocessor = self.get_data_transformer_object()
             logging.info("Got the preprocessor object")
 
-            train_df = DataTransformation.read_data(file_path=self.data_ingestion_artifact.trained_file_path)
-            test_df = DataTransformation.read_data(file_path=self.data_ingestion_artifact.test_file_path)
+            train_df = DataTransformation.read_data(
+                file_path=self.data_ingestion_artifact.trained_file_path
+            )
+            test_df = DataTransformation.read_data(
+                file_path=self.data_ingestion_artifact.test_file_path
+            )
 
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis=1)
             target_feature_train_df = train_df[TARGET_COLUMN]
@@ -92,7 +99,7 @@ class DataTransformation:
             target_feature_test_df = test_df[TARGET_COLUMN]
 
             target_feature_test_df = target_feature_test_df.replace(
-              TargetValueMapping().to_dict()
+                TargetValueMapping().to_dict()
             )
             logging.info("Got train features and test features of Testing dataset")
 
@@ -138,9 +145,18 @@ class DataTransformation:
                 input_feature_test_final, np.array(target_feature_test_final)
             ]
 
-            save_object(self.data_transformation_config.transformed_object_file_path, preprocessor)
-            save_numpy_array_data(self.data_transformation_config.transformed_train_file_path, array=train_arr)
-            save_numpy_array_data(self.data_transformation_config.transformed_test_file_path, array=test_arr)
+            save_object(
+                self.data_transformation_config.transformed_object_file_path,
+                preprocessor,
+            )
+            save_numpy_array_data(
+                self.data_transformation_config.transformed_train_file_path,
+                array=train_arr,
+            )
+            save_numpy_array_data(
+                self.data_transformation_config.transformed_test_file_path,
+                array=test_arr,
+            )
 
             logging.info("Saved the preprocessor object")
 
@@ -151,7 +167,7 @@ class DataTransformation:
             data_transformation_artifact = DataTransformationArtifact(
                 transformed_object_file_path=self.data_transformation_config.transformed_object_file_path,
                 transformed_train_file_path=self.data_transformation_config.transformed_train_file_path,
-                transformed_test_file_path=self.data_transformation_config.transformed_test_file_path
+                transformed_test_file_path=self.data_transformation_config.transformed_test_file_path,
             )
             return data_transformation_artifact
 

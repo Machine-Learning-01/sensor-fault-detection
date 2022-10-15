@@ -1,37 +1,42 @@
-from logging import exception
-import boto3
-from sensor.configuration.aws_connection import S3Client
-from io import StringIO
-from typing import Union,List
-import os,sys
-from sensor.logger import logging
-from mypy_boto3_s3.service_resource import Bucket
-from sensor.exception import SensorException
-from botocore.exceptions import ClientError
-from pandas import DataFrame,read_csv
+import os
 import pickle
-class SimpleStorageService:
+import sys
+from io import StringIO
+from typing import List, Union
 
+import boto3
+from botocore.exceptions import ClientError
+from mypy_boto3_s3.service_resource import Bucket
+from pandas import DataFrame, read_csv
+
+from sensor.configuration.aws_connection import S3Client
+from sensor.exception import SensorException
+from sensor.logger import logging
+
+
+class SimpleStorageService:
     def __init__(self):
         s3_client = S3Client()
         self.s3_resource = s3_client.s3_resource
         self.s3_client = s3_client.s3_client
 
-    def s3_key_path_available(self,bucket_name,s3_key)->bool:
+    def s3_key_path_available(self, bucket_name, s3_key) -> bool:
         try:
             bucket = self.get_bucket(bucket_name)
-            file_objects = [file_object for file_object in bucket.objects.filter(Prefix=s3_key)]
+            file_objects = [
+                file_object for file_object in bucket.objects.filter(Prefix=s3_key)
+            ]
             if len(file_objects) > 0:
                 return True
             else:
                 return False
         except Exception as e:
-            raise SensorException(e,sys)
-        
-        
+            raise SensorException(e, sys)
 
     @staticmethod
-    def read_object(object_name: str, decode: bool = True, make_readable: bool = False) -> Union[StringIO, str]:
+    def read_object(
+        object_name: str, decode: bool = True, make_readable: bool = False
+    ) -> Union[StringIO, str]:
         """
         Method Name :   read_object
         Description :   This method reads the object_name object with kwargs
@@ -77,7 +82,9 @@ class SimpleStorageService:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def get_file_object( self, filename: str, bucket_name: str) -> Union[List[object], object]:
+    def get_file_object(
+        self, filename: str, bucket_name: str
+    ) -> Union[List[object], object]:
         """
         Method Name :   get_file_object
         Description :   This method gets the file object from bucket_name bucket based on filename
@@ -93,7 +100,9 @@ class SimpleStorageService:
         try:
             bucket = self.get_bucket(bucket_name)
 
-            file_objects = [file_object for file_object in bucket.objects.filter(Prefix=filename)]
+            file_objects = [
+                file_object for file_object in bucket.objects.filter(Prefix=filename)
+            ]
 
             func = lambda x: x[0] if len(x) == 1 else x
 
@@ -105,7 +114,9 @@ class SimpleStorageService:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def load_model(self, model_name: str, bucket_name: str, model_dir: str = None) -> object:
+    def load_model(
+        self, model_name: str, bucket_name: str, model_dir: str = None
+    ) -> object:
         """
         Method Name :   load_model
         Description :   This method loads the model_name model from bucket_name bucket with kwargs
@@ -158,7 +169,13 @@ class SimpleStorageService:
                 pass
             logging.info("Exited the create_folder method of S3Operations class")
 
-    def upload_file(self, from_filename: str, to_filename: str,  bucket_name: str,  remove: bool = True):
+    def upload_file(
+        self,
+        from_filename: str,
+        to_filename: str,
+        bucket_name: str,
+        remove: bool = True,
+    ):
         """
         Method Name :   upload_file
         Description :   This method uploads the from_filename file to bucket_name bucket with to_filename as bucket filename
@@ -197,7 +214,13 @@ class SimpleStorageService:
         except Exception as e:
             raise SensorException(e, sys) from e
 
-    def upload_df_as_csv(self,data_frame: DataFrame,local_filename: str, bucket_filename: str,bucket_name: str,) -> None:
+    def upload_df_as_csv(
+        self,
+        data_frame: DataFrame,
+        local_filename: str,
+        bucket_filename: str,
+        bucket_name: str,
+    ) -> None:
         """
         Method Name :   upload_df_as_csv
         Description :   This method uploads the dataframe to bucket_filename csv file in bucket_name bucket

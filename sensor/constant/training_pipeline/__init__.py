@@ -1,6 +1,8 @@
 # pipeline name and root directory constant
 import os
+
 from sensor.constant.s3_bucket import TRAINING_BUCKET_NAME
+
 TARGET_COLUMN = "class"
 PIPELINE_NAME: str = "sensor"
 ARTIFACT_DIR: str = "artifact"

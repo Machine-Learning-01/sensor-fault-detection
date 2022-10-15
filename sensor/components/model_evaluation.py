@@ -1,18 +1,22 @@
-from sensor.entity.config_entity import ModelEvaluationConfig
-from sensor.entity.artifact_entity import ModelTrainerArtifact, DataIngestionArtifact, ModelEvaluationArtifact
-from sensor.utils.main_utils import load_object
-from sklearn.metrics import f1_score
-from sensor.exception import SensorException
-from sensor.constant.training_pipeline import TARGET_COLUMN
-from sensor.logger import logging
 import sys
-import pandas as pd
-from sensor.ml.model.s3_estimator import SensorEstimator
 from dataclasses import dataclass
 from typing import Optional
-from sensor.ml.model.estimator import TargetValueMapping
+
+import pandas as pd
+from sklearn.metrics import f1_score
+
+from sensor.constant.training_pipeline import TARGET_COLUMN
+from sensor.entity.artifact_entity import (ClassificationMetricArtifact,
+                                           DataIngestionArtifact,
+                                           ModelEvaluationArtifact,
+                                           ModelTrainerArtifact)
+from sensor.entity.config_entity import ModelEvaluationConfig
+from sensor.exception import SensorException
+from sensor.logger import logging
 from sensor.ml.metric import calculate_metric
-from sensor.entity.artifact_entity import ClassificationMetricArtifact
+from sensor.ml.model.estimator import TargetValueMapping
+from sensor.ml.model.s3_estimator import SensorEstimator
+from sensor.utils.main_utils import load_object
 
 
 @dataclass
@@ -25,9 +29,12 @@ class EvaluateModelResponse:
 
 
 class ModelEvaluation:
-
-    def __init__(self, model_eval_config: ModelEvaluationConfig, data_ingestion_artifact: DataIngestionArtifact,
-                 model_trainer_artifact: ModelTrainerArtifact):
+    def __init__(
+        self,
+        model_eval_config: ModelEvaluationConfig,
+        data_ingestion_artifact: DataIngestionArtifact,
+        model_trainer_artifact: ModelTrainerArtifact,
+    ):
         try:
             self.model_eval_config = model_eval_config
             self.data_ingestion_artifact = data_ingestion_artifact
@@ -39,8 +46,9 @@ class ModelEvaluation:
         try:
             bucket_name = self.model_eval_config.bucket_name
             model_path = self.model_eval_config.s3_model_key_path
-            sensor_estimator = SensorEstimator(bucket_name=bucket_name,
-                                               model_path=model_path)
+            sensor_estimator = SensorEstimator(
+                bucket_name=bucket_name, model_path=model_path
+            )
 
             if sensor_estimator.is_model_present(model_path=model_path):
                 return sensor_estimator
@@ -52,7 +60,9 @@ class ModelEvaluation:
         try:
             test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
             x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
-            trained_model = load_object(file_path=self.model_trainer_artifact.trained_model_file_path)
+            trained_model = load_object(
+                file_path=self.model_trainer_artifact.trained_model_file_path
+            )
             y.replace(TargetValueMapping().to_dict(), inplace=True)
             y_hat_trained_model = trained_model.predict(x)
 
@@ -65,13 +75,16 @@ class ModelEvaluation:
                 best_model_f1_score = f1_score(y, y_hat_best_model)
                 best_model_metric_artifact = calculate_metric(best_model, x, y)
             # calucate how much percentage training model accuracy is increased/decreased
-            tmp_best_model_score = 0 if best_model_f1_score is None else best_model_f1_score
-            result = EvaluateModelResponse(trained_model_f1_score=trained_model_f1_score,
-                                           best_model_f1_score=best_model_f1_score,
-                                           is_model_accepted=trained_model_f1_score > tmp_best_model_score,
-                                           changed_accuracy=trained_model_f1_score - tmp_best_model_score,
-                                           best_model_metric_artifact=best_model_metric_artifact
-                                           )
+            tmp_best_model_score = (
+                0 if best_model_f1_score is None else best_model_f1_score
+            )
+            result = EvaluateModelResponse(
+                trained_model_f1_score=trained_model_f1_score,
+                best_model_f1_score=best_model_f1_score,
+                is_model_accepted=trained_model_f1_score > tmp_best_model_score,
+                changed_accuracy=trained_model_f1_score - tmp_best_model_score,
+                best_model_metric_artifact=best_model_metric_artifact,
+            )
             logging.info(f"Result: {result}")
             return result
 
@@ -86,7 +99,7 @@ class ModelEvaluation:
                 best_model_path=self.model_trainer_artifact.trained_model_file_path,
                 trained_model_path=self.model_trainer_artifact.trained_model_file_path,
                 changed_accuracy=evaluate_model_response.changed_accuracy,
-                best_model_metric_artifact=evaluate_model_response.best_model_metric_artifact
+                best_model_metric_artifact=evaluate_model_response.best_model_metric_artifact,
             )
 
             logging.info(f"Model evaluation artifact: {model_evaluation_artifact}")

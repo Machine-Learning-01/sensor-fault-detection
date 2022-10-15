@@ -1,4 +1,6 @@
-from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import (confusion_matrix, f1_score, precision_score,
+                             recall_score)
+
 from sensor.entity.artifact_entity import ClassificationMetricArtifact
 
 
@@ -12,7 +14,7 @@ def calculate_metric(model, x, y) -> ClassificationMetricArtifact:
     classification_metric = ClassificationMetricArtifact(
         f1_score=f1_score(y, yhat),
         recall_score=recall_score(y, yhat),
-        precision_score=precision_score(y, yhat)
+        precision_score=precision_score(y, yhat),
     )
     return classification_metric
 
