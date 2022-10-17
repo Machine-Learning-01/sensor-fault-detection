@@ -10,8 +10,8 @@ module "sensor_ec2" {
   source = "./sensor_ec2"
 }
 
-module "sensor_io_files_bucket" {
-  source = "./sensor_io_files_bucket"
+module "sensor_model" {
+  source = "./sensor_model_bucket"
 }
 
 module "sensor_ecr" {

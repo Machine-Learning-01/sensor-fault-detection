@@ -3,7 +3,7 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "io_files" {
+variable "model" {
   type    = string
   default = "sensor-model"
 }
