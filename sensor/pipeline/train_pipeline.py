@@ -160,7 +160,7 @@ class TrainPipeline:
         try:
             data_ingestion_artifact = self.start_data_ingestion()
 
-            data_validation_artifact = self.start_data_ingestion(
+            data_validation_artifact = self.start_data_validation(
                 data_ingestion_artifact
             )
 
@@ -173,8 +173,7 @@ class TrainPipeline:
             )
 
             model_evaluation_artifact = self.start_model_evaluation(
-                data_validation_artifact=data_validation_artifact,
-                model_trainer_artifact=model_trainer_artifact,
+                data_validation_artifact, model_trainer_artifact,
             )
 
             if not model_evaluation_artifact.is_model_accepted:

@@ -42,6 +42,7 @@ class DataTransformation:
     def read_data(file_path) -> pd.DataFrame:
         try:
             return pd.read_csv(file_path)
+
         except Exception as e:
             raise SensorException(e, sys)
 
@@ -58,6 +59,7 @@ class DataTransformation:
             logging.info("Got numerical cols from schema config")
 
             robust_scaler = RobustScaler()
+
             simple_imputer = SimpleImputer(strategy="constant", fill_value=0)
 
             logging.info("Initialized RobustScaler, Simple Imputer")
@@ -71,6 +73,7 @@ class DataTransformation:
             logging.info(
                 "Exited get_data_transformer_object method of DataTransformation class"
             )
+
             return preprocessor
 
         except Exception as e:
@@ -79,17 +82,21 @@ class DataTransformation:
     def initiate_data_transformation(self,) -> DataTransformationArtifact:
         try:
             logging.info("Starting data transformation")
+
             preprocessor = self.get_data_transformer_object()
+
             logging.info("Got the preprocessor object")
 
             train_df = DataTransformation.read_data(
-                file_path=self.data_validation_artifact.trained_file_path
+                self.data_validation_artifact.valid_train_file_path
             )
+
             test_df = DataTransformation.read_data(
-                file_path=self.data_validation_artifact.test_file_path
+                file_path=self.data_validation_artifact.valid_test_file_path
             )
 
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis=1)
+
             target_feature_train_df = train_df[TARGET_COLUMN]
 
             target_feature_train_df = target_feature_train_df.replace(
@@ -105,6 +112,7 @@ class DataTransformation:
             target_feature_test_df = target_feature_test_df.replace(
                 TargetValueMapping().to_dict()
             )
+
             logging.info("Got train features and test features of Testing dataset")
 
             logging.info(
@@ -173,6 +181,7 @@ class DataTransformation:
                 transformed_train_file_path=self.data_transformation_config.transformed_train_file_path,
                 transformed_test_file_path=self.data_transformation_config.transformed_test_file_path,
             )
+
             return data_transformation_artifact
 
         except Exception as e:
