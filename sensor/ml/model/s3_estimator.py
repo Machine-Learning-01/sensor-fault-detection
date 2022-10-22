@@ -20,8 +20,11 @@ class SensorEstimator:
         :param model_path: Location of your model in bucket
         """
         self.bucket_name = bucket_name
+
         self.s3 = SimpleStorageService()
+
         self.model_path = model_path
+
         self.loaded_model: SensorModel = None
 
     def is_model_present(self, model_path):
@@ -29,8 +32,10 @@ class SensorEstimator:
             return self.s3.s3_key_path_available(
                 bucket_name=self.bucket_name, s3_key=model_path
             )
+
         except SensorException as e:
             print(e)
+
             return False
 
     def load_model(self,) -> SensorModel:
@@ -38,7 +43,6 @@ class SensorEstimator:
         Load the model from the model_path
         :return:
         """
-
         return self.s3.load_model(self.model_path, bucket_name=self.bucket_name)
 
     def save_model(self, from_file, remove: bool = False) -> None:
@@ -55,6 +59,7 @@ class SensorEstimator:
                 bucket_name=self.bucket_name,
                 remove=remove,
             )
+
         except Exception as e:
             raise SensorException(e, sys)
 

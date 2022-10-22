@@ -8,8 +8,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 
 from sensor.constant.training_pipeline import TARGET_COLUMN
-from sensor.entity.artifact_entity import (DataIngestionArtifact,
-                                           DataTransformationArtifact)
+from sensor.entity.artifact_entity import (
+    DataTransformationArtifact,
+    DataValidationArtifact,
+)
 from sensor.entity.config_entity import DataTransformationConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
@@ -20,17 +22,19 @@ from sensor.utils.main_utils import save_numpy_array_data, save_object
 class DataTransformation:
     def __init__(
         self,
-        data_ingestion_artifact: DataIngestionArtifact,
+        data_validation_artifact: DataValidationArtifact,
         data_transformation_config: DataTransformationConfig,
     ):
         """
 
-        :param data_ingestion_artifact: Output reference of data ingestion artifact stage
+        :param data_validation_artifact: Output reference of data ingestion artifact stage
         :param data_transformation_config: configuration for data transformation
         """
         try:
-            self.data_ingestion_artifact = data_ingestion_artifact
+            self.data_validation_artifact = data_validation_artifact
+
             self.data_transformation_config = data_transformation_config
+
         except Exception as e:
             raise SensorException(e, sys)
 
@@ -79,10 +83,10 @@ class DataTransformation:
             logging.info("Got the preprocessor object")
 
             train_df = DataTransformation.read_data(
-                file_path=self.data_ingestion_artifact.trained_file_path
+                file_path=self.data_validation_artifact.trained_file_path
             )
             test_df = DataTransformation.read_data(
-                file_path=self.data_ingestion_artifact.test_file_path
+                file_path=self.data_validation_artifact.test_file_path
             )
 
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis=1)

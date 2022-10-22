@@ -1,7 +1,11 @@
-.*
 artifacts
 demo
 env
 logs
 infrastructure
 docs
+sensor.egg-info
+LICENSE
+README.md
+notebooks
+

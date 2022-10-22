@@ -43,9 +43,9 @@ async def trainRouteClient():
 async def predictRouteClient():
     try:
         prediction_pipeline = PredictionPipeline()
-        
+
         prediction_pipeline.initiate_prediction()
-        
+
         return Response(
             "Prediction successful and predictions are stored in s3 bucket !!"
         )

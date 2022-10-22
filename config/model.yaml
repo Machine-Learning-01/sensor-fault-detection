@@ -14,18 +14,17 @@ model_selection:
       criterion: squared_error
     search_param_grid:
       n_estimators:
-      - 100
+        - 100
       max_depth:
-      - 3
+        - 3
 
-  # module_1:
-  #   class: GradientBoostingClassifier
-  #   module: sklearn.ensemble
-  #   search_param_grid:
-  #     loss:
-  #     - deviance
-  #     n_estimators:
-  #     - 100
-  #     criterion:
-  #     - friedman_mse
-    
+  module_1:
+    class: GradientBoostingClassifier
+    module: sklearn.ensemble
+    search_param_grid:
+      loss:
+        - deviance
+      n_estimators:
+        - 100
+      criterion:
+        - friedman_mse
