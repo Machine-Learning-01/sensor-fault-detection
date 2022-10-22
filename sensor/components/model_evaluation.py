@@ -67,7 +67,7 @@ class ModelEvaluation:
 
     def evaluate_model(self) -> EvaluateModelResponse:
         try:
-            test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
+            test_df = pd.read_csv(self.data_validation_artifact.valid_test_file_path)
 
             x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
 
