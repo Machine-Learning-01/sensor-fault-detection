@@ -22,8 +22,6 @@ model_selection:
     class: GradientBoostingClassifier
     module: sklearn.ensemble
     search_param_grid:
-      loss:
-        - deviance
       n_estimators:
         - 100
       criterion:

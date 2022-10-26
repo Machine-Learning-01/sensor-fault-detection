@@ -48,14 +48,21 @@ class DataValidation:
         """
         try:
             dataframe_columns = df.columns
+
             status = True
+
             missing_numerical_columns = []
+
             for column in self._schema_config["numerical_columns"]:
                 if column not in dataframe_columns:
                     status = False
+
                     missing_numerical_columns.append(column)
+
             logging.info(f"Missing numerical column: {missing_numerical_columns}")
+
             return status
+
         except Exception as e:
             raise SensorException(e, sys) from e
 
@@ -88,13 +95,17 @@ class DataValidation:
             )
 
             n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
+
             n_drifted_features = json_report["data_drift"]["data"]["metrics"][
                 "n_drifted_features"
             ]
 
             logging.info(f"{n_drifted_features}/{n_features} drift detected.")
+
             drift_status = json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
+
             return drift_status
+
         except Exception as e:
             raise SensorException(e, sys) from e
 
@@ -109,10 +120,11 @@ class DataValidation:
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
-
         try:
             validation_error_msg = ""
+
             logging.info("Starting data validation")
+
             train_df, test_df = (
                 DataValidation.read_data(
                     file_path=self.data_ingestion_artifact.trained_file_path
@@ -123,14 +135,18 @@ class DataValidation:
             )
 
             status = self.validate_number_of_columns(dataframe=train_df)
+
             logging.info(
                 f"All required columns present in training dataframe: {status}"
             )
+
             if not status:
                 validation_error_msg += f"Columns are missing in training dataframe."
+
             status = self.validate_number_of_columns(dataframe=test_df)
 
             logging.info(f"All required columns present in testing dataframe: {status}")
+
             if not status:
                 validation_error_msg += f"Columns are missing in test dataframe."
 
@@ -140,6 +156,7 @@ class DataValidation:
                 validation_error_msg += (
                     f"Numerical columns are missing in training dataframe."
                 )
+
             status = self.is_numerical_column_exist(df=test_df)
 
             if not status:
@@ -148,13 +165,15 @@ class DataValidation:
                 )
 
             validation_status = len(validation_error_msg) == 0
+
             if validation_status:
-                ...
-            # drift_status = self.detect_dataset_drift(train_df, test_df)
-            # if drift_status:
-            #     logging.info(f"Drift detected.")
+                drift_status = self.detect_dataset_drift(train_df, test_df)
+                if drift_status:
+                    logging.info(f"Drift detected.")
+
             else:
                 logging.info(f"Validation_error: {validation_error_msg}")
+
             data_validation_artifact = DataValidationArtifact(
                 validation_status=validation_status,
                 valid_train_file_path=self.data_ingestion_artifact.trained_file_path,
@@ -163,8 +182,10 @@ class DataValidation:
                 invalid_test_file_path=self.data_validation_config.invalid_test_file_path,
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
             )
-            # )
+
             logging.info(f"Data validation artifact: {data_validation_artifact}")
+
             return data_validation_artifact
+
         except Exception as e:
             raise SensorException(e, sys) from e
