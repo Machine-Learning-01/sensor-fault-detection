@@ -1,6 +1,5 @@
 import sys
 
-from sensor.cloud_storage.aws_storage import SimpleStorageService
 from sensor.entity.artifact_entity import ModelPusherArtifact, ModelTrainerArtifact
 from sensor.entity.config_entity import ModelPusherConfig
 from sensor.exception import SensorException
@@ -14,8 +13,6 @@ class ModelPusher:
         model_trainer_artifact: ModelTrainerArtifact,
         model_pusher_config: ModelPusherConfig,
     ):
-        self.s3 = SimpleStorageService()
-
         self.model_trainer_artifact = model_trainer_artifact
 
         self.model_pusher_config = model_pusher_config
