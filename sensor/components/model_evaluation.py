@@ -68,9 +68,11 @@ class ModelEvaluation:
             y.replace(TargetValueMapping().to_dict(), inplace=True)
 
             y_hat_trained_model = trained_model.predict(x)
-            
-            trained_model_score = calculate_metric(trained_model,y,y_hat_trained_model)
-            
+
+            trained_model_score = calculate_metric(
+                trained_model, y, y_hat_trained_model
+            )
+
             trained_model_f1_score = trained_model_score.f1_score
 
             best_model_f1_score = None
@@ -81,9 +83,9 @@ class ModelEvaluation:
 
             if best_model is not None:
                 best_model_metric_artifact = calculate_metric(best_model, x, y)
-                
-                best_model_f1_score=best_model_metric_artifact.f1_score
-                
+
+                best_model_f1_score = best_model_metric_artifact.f1_score
+
             # calucate how much percentage training model accuracy is increased/decreased
             tmp_best_model_score = (
                 0 if best_model_f1_score is None else best_model_f1_score
