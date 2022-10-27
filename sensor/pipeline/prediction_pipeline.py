@@ -32,11 +32,11 @@ class PredictionPipeline:
         except Exception as e:
             raise SensorException(e, sys)
 
-    def get_data(self,) -> DataFrame:
+    def get_data(self) -> DataFrame:
         try:
             logging.info("Entered get_data method of SensorData class")
 
-            prediction_df: DataFrame = self.s3.read_csv(
+            prediction_df = self.s3.read_csv(
                 filename=self.prediction_pipeline_config.data_file_path,
                 bucket_name=self.prediction_pipeline_config.data_bucket_name,
             )
@@ -94,8 +94,6 @@ class PredictionPipeline:
             logging.info("Uploaded artifacts folder to s3 bucket_name")
 
             logging.info(f"File has uploaded to {predicted_dataframe}")
-
-            return predicted_dataframe
 
         except Exception as e:
             raise SensorException(e, sys)
