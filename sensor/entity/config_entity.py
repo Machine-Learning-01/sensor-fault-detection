@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sensor.constant import prediction_pipeline
 from sensor.constant.training_pipeline import *
+from sensor.entity.artifact_entity import ClassificationMetricArtifact
 
 TIMESTAMP: str = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 
@@ -137,3 +138,16 @@ class PredictionPipelineConfig:
     model_bucket_name: str = prediction_pipeline.MODEL_BUCKET_NAME
 
     output_file_name: str = prediction_pipeline.PREDICTION_OUTPUT_FILE_NAME
+
+
+@dataclass
+class EvaluateModelResponse:
+    trained_model_f1_score: float
+
+    best_model_f1_score: float
+
+    is_model_accepted: bool
+
+    changed_accuracy: float
+
+    best_model_metric_artifact: ClassificationMetricArtifact
