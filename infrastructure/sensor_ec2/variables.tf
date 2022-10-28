@@ -5,22 +5,22 @@ variable "aws_region" {
 
 variable "app_ami" {
   type    = string
-  default = "ami-05bd86a47b3b8e24b"
+  default = "ami-0eb1f91977a3fcc1b"
 }
 
 variable "app_instance_type" {
   type    = string
-  default = "t2.medium"
+  default = "t2.large"
 }
 
 variable "app_key_pair_name" {
   type    = string
-  default = "sethusaim"
+  default = "ineuron"
 }
 
 variable "app_tag_name" {
   type    = string
-  default = "App Server"
+  default = "Application Server"
 }
 
 variable "app_eip_name" {
