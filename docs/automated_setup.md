@@ -1,3 +1,5 @@
+![alt text](https://ineuron.ai/images/ineuron-logo.png)
+
 # Infrastructure Setup 
 
 ## AWS Cloud Setup 
@@ -34,9 +36,9 @@ https://awscli.amazonaws.com/AWSCLIV2.msi
 
 Once the download and double click on the installer, and click on next and agree to the terms and conditions, and click on next and click on install button. Once the installation is done, click on finish and proceed to the futher steps
 
-### Install AWS CLI in MAC OS System
+### Install AWS CLI in MacOS System
 
-To install awscli on MAC Os system, execute the following commands
+To install awscli on MacOS system, execute the following commands
 
 ```bash
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
@@ -162,11 +164,13 @@ Now that everything is set, we can plan and create our infrastructure using terr
 ```bash
 terraform plan
 ```
+
 On successfully execution of the commands, we can create/apply the infrastructure if we are satisfied with the plan
 
 ```bash
 terraform apply --auto-approve
 ```
+
 On successfull execution of the commands, all the terraform modules present in infrastructure will be created by terraform. If at any point, we want to create specific modules of the infrastructure, execute the commands
 
 ```bash
@@ -174,11 +178,13 @@ terraform apply -target=module.<module_name> --auto-approve
 ```
 
 To destroy the infrastructure, execute the following commands
+
 ```bash
 terraform destroy --auto-approve
 ```
 
 If at any point of want to destroy, only a part of the infrastructure, then execute the following commands, 
+
 ```bash
 terraform destroy -target=module.<module_name> --auto-approve
 ```
