@@ -1,5 +1,4 @@
 import sys
-from dataclasses import dataclass
 from typing import Optional
 
 import pandas as pd
@@ -12,22 +11,13 @@ from sensor.entity.artifact_entity import (
     ModelEvaluationArtifact,
     ModelTrainerArtifact,
 )
-from sensor.entity.config_entity import ModelEvaluationConfig
+from sensor.entity.config_entity import EvaluateModelResponse, ModelEvaluationConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.ml.metric import calculate_metric
 from sensor.ml.model.estimator import TargetValueMapping
 from sensor.ml.model.s3_estimator import SensorEstimator
 from sensor.utils.main_utils import load_object
-
-
-@dataclass
-class EvaluateModelResponse:
-    trained_model_f1_score: float
-    best_model_f1_score: float
-    is_model_accepted: bool
-    changed_accuracy: float
-    best_model_metric_artifact: ClassificationMetricArtifact
 
 
 class ModelEvaluation:
@@ -79,7 +69,11 @@ class ModelEvaluation:
 
             y_hat_trained_model = trained_model.predict(x)
 
-            trained_model_f1_score = f1_score(y, y_hat_trained_model)
+            trained_model_score = calculate_metric(
+                trained_model, y, y_hat_trained_model
+            )
+
+            trained_model_f1_score = trained_model_score.f1_score
 
             best_model_f1_score = None
 
@@ -88,11 +82,9 @@ class ModelEvaluation:
             best_model = self.get_best_model()
 
             if best_model is not None:
-                y_hat_best_model = best_model.predict(x)
-
-                best_model_f1_score = f1_score(y, y_hat_best_model)
-
                 best_model_metric_artifact = calculate_metric(best_model, x, y)
+
+                best_model_f1_score = best_model_metric_artifact.f1_score
 
             # calucate how much percentage training model accuracy is increased/decreased
             tmp_best_model_score = (

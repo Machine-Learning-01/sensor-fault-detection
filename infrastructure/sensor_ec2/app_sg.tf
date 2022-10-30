@@ -1,6 +1,5 @@
 resource "aws_security_group" "security_group" {
-  name        = var.app_sg_group_name
-  description = "Security Group for EKS Master Server"
+  name = var.app_sg_group_name
 
   ingress {
     from_port   = var.app_ingress_from_port[0]

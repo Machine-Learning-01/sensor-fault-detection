@@ -35,8 +35,11 @@ class DataValidation:
         """
         try:
             status = len(dataframe.columns) == len(self._schema_config["columns"])
+
             logging.info(f"Is required column present: [{status}]")
+
             return status
+
         except Exception as e:
             raise SensorException(e, sys)
 
@@ -87,6 +90,7 @@ class DataValidation:
             data_drift_profile.calculate(reference_df, current_df)
 
             report = data_drift_profile.json()
+
             json_report = json.loads(report)
 
             write_yaml_file(
@@ -125,13 +129,12 @@ class DataValidation:
 
             logging.info("Starting data validation")
 
-            train_df, test_df = (
-                DataValidation.read_data(
-                    file_path=self.data_ingestion_artifact.trained_file_path
-                ),
-                DataValidation.read_data(
-                    file_path=self.data_ingestion_artifact.test_file_path
-                ),
+            train_df = DataValidation.read_data(
+                file_path=self.data_ingestion_artifact.trained_file_path
+            )
+
+            test_df = DataValidation.read_data(
+                file_path=self.data_ingestion_artifact.test_file_path
             )
 
             status = self.validate_number_of_columns(dataframe=train_df)
@@ -168,6 +171,7 @@ class DataValidation:
 
             if validation_status:
                 drift_status = self.detect_dataset_drift(train_df, test_df)
+
                 if drift_status:
                     logging.info(f"Drift detected.")
 

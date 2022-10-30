@@ -3,7 +3,7 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "model" {
+variable "model_bucket_name" {
   type    = string
   default = "sensor-model"
 }
@@ -17,3 +17,4 @@ variable "force_destroy_bucket" {
   type    = bool
   default = true
 }
+
