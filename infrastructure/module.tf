@@ -17,3 +17,7 @@ module "sensor_model" {
 module "sensor_ecr" {
   source = "./sensor_ecr"
 }
+
+module "sensor_pred_data" {
+  source = "./sensor_pred_data_bucket"
+}
